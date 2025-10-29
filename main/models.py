@@ -34,14 +34,14 @@ class Poster(models.Model):
 
 
 class PosterShow(models.Model):
-    show=models.ForeignKey(Show)
-    poster_id=models.ForeignKey(Poster)
+    show=models.ForeignKey(Show, on_delete=models.CASCADE)
+    poster_id=models.ForeignKey(Poster, on_delete=models.CASCADE)
     date=models.DateField()
 
 
 class PosterActor(models.Model):
-    poster=models.ForeignKey(Poster)
-    actor=models.ForeignKey(Actor)
+    poster=models.ForeignKey(Poster, on_delete=models.CASCADE)
+    actor=models.ForeignKey(Actor, on_delete=models.CASCADE)
 
 
 class UserProfile(models.Model):
@@ -60,8 +60,8 @@ class Ticket(models.Model):
     row=models.IntegerField()
     seat=models.IntegerField()
     status=models.BooleanField()
-    show=models.ForeignKey(Show)
-    user=models.ForeignKey(UserProfile)
+    show=models.ForeignKey(Show, on_delete=models.CASCADE)
+    user=models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     class Meta:
         verbose_name="Билет"
         verbose_name_plural="Билеты"

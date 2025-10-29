@@ -1,4 +1,6 @@
 from django.contrib import admin
+from .models import Ticket, Actor, Show, PosterShow, PosterActor, UserProfile
+
 
 # Register your models here.
 @admin.register(Ticket)
