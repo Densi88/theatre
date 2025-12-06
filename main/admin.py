@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Ticket, Actor, Show, PosterShow, PosterActor, UserProfile
+from .models import Ticket, Actor, Show, UserProfile, Session, Hall
 
 
 # Register your models here.
@@ -15,16 +15,17 @@ class AdminActor(admin.ModelAdmin):
 class AdminShow(admin.ModelAdmin):
     pass
 
-@admin.register(PosterShow)
-class AdminPosterShow(admin.ModelAdmin):
-    pass
-
-@admin.register(PosterActor)
-class AdminPosterActor(admin.ModelAdmin):
-    pass
-
 @admin.register(UserProfile)
 class AdminUserProfile(admin.ModelAdmin):
     pass
+
+@admin.register(Session)
+class AdminSession(admin.ModelAdmin):
+    pass
+
+@admin.register(Hall)
+class AdminHall(admin.ModelAdmin):
+    pass
+
 
 
