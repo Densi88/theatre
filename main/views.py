@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
+#Добавить тут вьюсеты как классы
 
-def show_shows(request):
-    return HttpResponse("Привет")
+
 
 

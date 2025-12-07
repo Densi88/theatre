@@ -3,8 +3,8 @@ from django.urls import path
 
 from main import views
 
+#Написать пути(вроде легко)
+
 urlpatterns=[
-    path('', views.show_shows),
-    path('admin/', admin.site.urls),
     
 ]

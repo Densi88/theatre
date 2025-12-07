@@ -38,7 +38,7 @@ class Hall(models.Model):
 
 
 class Session(models.Model):
-    date=models.DateField()
+    date=models.DateTimeField(verbose_name="Время сеанса")
     show=models.ForeignKey(Show, on_delete=models.CASCADE)
     hall_rows=models.IntegerField(default=10)
     hall_seats=models.IntegerField(default=20)
@@ -62,15 +62,18 @@ class UserProfile(models.Model):
 
 
 class Ticket(models.Model):
-    date=models.DateField()
     row=models.IntegerField()
     seat=models.IntegerField()
     status=models.BooleanField()
     price=models.IntegerField()
-    show=models.ForeignKey(Show, on_delete=models.CASCADE)
+    show=models.ForeignKey(Session, on_delete=models.CASCADE)
     user=models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     class Meta:
         verbose_name="Билет"
         verbose_name_plural="Билеты"
 
+class News(models.Model):
+    published_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время публикации")
+    description=models.TextField()
+    news_image=models.ImageField()
 
