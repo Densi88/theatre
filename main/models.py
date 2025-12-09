@@ -75,5 +75,5 @@ class Ticket(models.Model):
 class News(models.Model):
     published_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время публикации")
     description=models.TextField()
-    news_image=models.ImageField()
+    news_image=models.ImageField(upload_to='')
 
