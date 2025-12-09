@@ -1,2 +1,3 @@
 *.sqlite3
 theatre/__pycache__
+frontend/public/*.jpg
