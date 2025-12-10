@@ -29,7 +29,7 @@ const routes = [
         name: 'my-tickets'
       },
       { path: '/login', 
-        component: () => import('pages/Login.vue'),
+        component: () => import('src/pages/LoginPage.vue'),
         name: 'login'
       },
     ]

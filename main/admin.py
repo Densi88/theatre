@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Ticket, Actor, Show, UserProfile, Session, Hall, News
+from .models import Ticket, Actor, Show, UserProfile, Session, Hall, News, Genre
 
 
 # Register your models here.
@@ -29,6 +29,10 @@ class AdminHall(admin.ModelAdmin):
 
 @admin.register(News)
 class AdminNews(admin.ModelAdmin):
+    pass
+
+@admin.register(Genre)
+class AdminGenre(admin.ModelAdmin):
     pass
 
 

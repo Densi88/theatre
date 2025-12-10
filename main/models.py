@@ -24,7 +24,7 @@ class Show(models.Model):
     duration=models.IntegerField(verbose_name="Длительность")
     genre=models.ManyToManyField(Genre)
     actor=models.ManyToManyField(Actor)
-    poster=models.ImageField()
+    poster=models.ImageField(upload_to='')
     available=models.BooleanField()
 
 

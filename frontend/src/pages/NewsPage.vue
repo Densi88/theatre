@@ -87,7 +87,6 @@ import axios from "axios"
 
 
 const $q = useQuasar()
-// Состояние
 const news = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
@@ -108,9 +107,6 @@ const loadNews = async () => {
     const response = await axios.get('/api/news/', { params })
     news.value = response.data.results || response.data
     totalCount.value = response.data.count || response.data.length
-
-    console.log('Ответ от API:', response.data) // Добавьте это
-    console.log('Тип данных:', typeof response.data) // Добавьте это
     
     // Проверяем структуру ответа
     if (response.data.results) {
@@ -137,61 +133,44 @@ const loadNews = async () => {
 }
 
 const getImageUrl = (imagePath) => {
-  console.log('📸 Получение URL изображения:', imagePath)
-  // Если путь уже полный URL, возвращаем как есть
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    console.log('📸 URL уже полный:', imagePath)
+    console.log('URL уже полный:', imagePath)
     return imagePath
   }
   
-  // Для относительных путей
-  console.log('📸 Относительный путь, добавляем базовый URL')
   return imagePath
 }
 
 const truncateText = (text, maxLength = 150) => {
-  console.log('✂️ Обрезка текста:', text?.substring(0, 50) + '...')
   
   if (!text || typeof text !== 'string') {
-    console.log('✂️ Текст отсутствует или не строка')
     return 'Описание отсутствует'
   }
   
   const trimmed = text.trim()
   
   if (trimmed.length <= maxLength) {
-    console.log('✂️ Текст не требует обрезки')
     return trimmed
   }
   
   const result = trimmed.substring(0, maxLength) + '...'
-  console.log('✂️ Обрезано до:', result)
   return result
 }
 
 const getFirstTwoSentences = (text) => {
-  console.log('📝 Получение первых двух предложений')
-  
   if (!text || typeof text !== 'string') {
-    console.log('📝 Текст отсутствует')
     return ''
   }
   
   const trimmed = text.trim()
   
-  // Простая логика для русских предложений
   const sentences = trimmed.match(/[^.!?]+[.!?]+/g) || [trimmed]
-  
-  console.log('📝 Найдено предложений:', sentences.length)
   
   if (sentences.length === 0) return ''
   
-  // Берем первые два предложения
   const firstTwo = sentences.slice(0, 2).join(' ')
   
-  // Обрезаем если слишком длинные
   const result = truncateText(firstTwo, 200)
-  console.log('📝 Результат:', result)
   return result
 }
 
