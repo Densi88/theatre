@@ -6,7 +6,6 @@
         <q-btn flat to="/">
           <img src="theatre_logo.jpg" height="105"  />
         </q-btn>
-        <q-toolbar-title>Театр</q-toolbar-title>
         <q-btn flat label="Главная" to="/" />
         <q-btn flat label="Спектакли" to="/shows" />
         <q-btn flat label="Новости" to="/news" />
