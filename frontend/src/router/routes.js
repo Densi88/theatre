@@ -14,7 +14,7 @@ const routes = [
       },
 
       {
-        path: 'show/:id',
+        path: 'shows/:id',
         component: () => import('pages/ShowPage.vue'),
         name: 'show'
       },
@@ -25,40 +25,35 @@ const routes = [
         name: 'news'
       },
       {
-        path: '/buy-tickets',
+        path: 'buy-tickets',
         component: () => import('pages/BuyTicketsPage.vue'),
         name: 'buy tickets'
       },
       {
-        path: '/my-tickets',
+        path: 'my-tickets',
         component: () => import('pages/MyTicketsPage.vue'),
         name: 'my-tickets'
       },
       {
-        path: '/login',
+        path: 'login',
         component: () => import('pages/LoginPage.vue'),
         name: 'login'
       },
       {
-        path: '/actors',
+        path: 'actors',
         component: () => import('pages/ActorsPage.vue'),
         name: 'actors'
       },
       {
-        path: '/genres',
+        path: 'genres',
         component: () => import('pages/GenresPage.vue'),
         name: 'genres'
       },
       {
-        path: '/news/:id',
+        path: 'news/:id',
         name: 'news-detail',
-        component: () => import('../pages/NewsDetail.vue')
+        component: () => import('pages/NewsDetail.vue')
       },
-      {
-        path: '/shows/:id',
-        name: 'show-detail',
-        component: () => import('../pages/ShowPage.vue')
-      }
     ]
   },
 

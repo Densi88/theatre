@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import json
 
 from .models import Show
 from .models import News
@@ -51,6 +52,26 @@ class ShowsSerializer(serializers.ModelSerializer):
         show.actor.set(actors)
         show.genre.set(genres)
         return show
+
+    def update(self, instance, validated_data):
+        actors = validated_data.pop('actor', None)
+        genres = validated_data.pop('genre', None)
+
+        # обычные поля
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        # M2M поля
+        if actors is not None:
+            instance.actor.set(actors)
+        if genres is not None:
+            instance.genre.set(genres)
+
+        return instance
+
+    
 
 class SessionSerializer(serializers.ModelSerializer):
     hall=HallSerializer()

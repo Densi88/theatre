@@ -53,9 +53,14 @@
                 <q-card-actions align="right">
                     <q-btn flat color="primary" icon="arrow_forward" label="Купить" @click.stop="buyShow(showItem)" />
                 </q-card-actions>
-                <div class="q-mb-md">
-                    <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
-                </div>
+                <q-card-actions align="left">
+                    <div class="q-mb-md">
+                        <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
+                    </div>
+                    <div class="q-mb-md">
+                        <q-btn color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
+                    </div>
+                </q-card-actions>
             </q-card>
         </div>
     </div>
@@ -86,6 +91,33 @@
         </q-card>
     </q-dialog>
 
+    <q-dialog v-model="updateDialog">
+        <q-card style="min-width: 400px;">
+            <q-card-section>
+                <div class="text-h6">Редактировать спектакль</div>
+            </q-card-section>
+
+            <q-card-section>
+                <q-input v-model="updatedShow.title" label="Название" outlined />
+                <q-input v-model="updatedShow.description" label="Описание" type="textarea" outlined class="q-mt-sm" />
+                <!-- Загрузка файла постера -->
+                <q-file v-model="updatedShow.poster" label="Постер спектакля" outlined accept="image/*"
+                    class="q-mt-sm" />
+                <q-select v-model="updatedShow.actor" :options="actors" label="Актеры" multiple emit-value map-options
+                    outlined class="q-mt-sm" />
+
+                <q-select v-model="updatedShow.genre" :options="genres" label="Жанры" multiple emit-value map-options
+                    outlined class="q-mt-sm" />
+                <q-input v-model="updatedShow.duration" label="Длительность" outlined class="q-mt-sm" />
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn flat label="Отмена" color="negative" v-close-popup />
+                <q-btn flat label="Добавить" color="primary" @click="updateShow" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+
 </template>
 
 <script setup>
@@ -104,7 +136,17 @@ const actors = ref([])
 const genres = ref([])
 
 const addDialog = ref(false)
+const updateDialog = ref(false)
 const newShow = ref({
+    title: '',
+    description: '',
+    poster: null,
+    actor: [],
+    genre: [],
+    duration: ''
+})
+const updatedShow = ref({
+    id: '',
     title: '',
     description: '',
     poster: null,
@@ -225,24 +267,65 @@ const loadActorsAndGenres = async () => {
     }
 }
 
-const deleteShow=async(showItem)=>{
+const deleteShow = async (showItem) => {
     try {
-    const confirmDelete = window.confirm(`Удалить спектакль "${showItem.title}"?`)
-    if (!confirmDelete) return
-    await axios.delete(`/api/shows/${showItem.id}/`) // обратите внимание на слэш в конце!
+        const confirmDelete = window.confirm(`Удалить спектакль "${showItem.title}"?`)
+        if (!confirmDelete) return
+        await axios.delete(`/api/shows/${showItem.id}/`) // обратите внимание на слэш в конце!
 
-    shows.value = shows.value.filter(s => s.id !== showItem.id)
+        shows.value = shows.value.filter(s => s.id !== showItem.id)
 
-    $q.notify({ type: 'positive', message: 'Спектакль удалён' })
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: 'Ошибка при удалении',
-      caption: error.response?.data || error.message
-    })
-  } 
+        $q.notify({ type: 'positive', message: 'Спектакль удалён' })
+    } catch (error) {
+        console.error(error)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка при удалении',
+            caption: error.response?.data || error.message
+        })
+    }
 }
+const openUpdateDialog = (showItem) => {
+    console.log(showItem.actor)
+    console.log(showItem.genre)
+    updatedShow.value = {
+        id: showItem.id, title: showItem.title, description: showItem.description, poster: showItem.poster, actor: showItem.actor.map(a => a.id),
+        genre: showItem.genre.map(g => g.id), duration: showItem.duration
+    }
+    updateDialog.value = true
+
+}
+const updateShow = async () => {
+    try {
+        const formData = new FormData()
+        formData.append('title', updatedShow.value.title)
+        formData.append('description', updatedShow.value.description)
+        formData.append('duration', updatedShow.value.duration)
+
+        updatedShow.value.actor.forEach(id => {
+            formData.append('actor', id)
+        })
+
+        updatedShow.value.genre.forEach(id => {
+            formData.append('genre', id)
+        })
+        if (updatedShow.value.poster instanceof File) {
+            formData.append('poster', updatedShow.value.poster)
+        }
+
+        const response = await axios.patch(
+            `/api/shows/${updatedShow.value.id}/`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        )
+
+        console.log('Updated:', response.data)
+
+    } catch (error) {
+        console.log("Update error:", error.response?.data)
+    }
+}
+
 onMounted(() => {
     loadShows()
     loadActorsAndGenres()
