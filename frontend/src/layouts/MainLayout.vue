@@ -13,7 +13,27 @@
         <q-btn flat label="Войти" to="/login" />
         <q-btn flat label="Купить билеты" to="/buy-tickets"></q-btn>
         <q-btn flat label="Админка" href="http://localhost:8000/admin/" target="_blank" />
+
+        <q-btn-dropdown
+          flat
+          color="white"
+          label="Прочее"
+        >
+          <q-list style="min-width: 180px">
+            <q-item clickable v-ripple to="/actors">
+              <q-item-section>Актеры</q-item-section>
+            </q-item>
+
+            <q-item clickable v-ripple to="/genres">
+              <q-item-section>Жанры</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+
       </q-toolbar>
+
+      
+        <!-- ▲ Выпадающее меню -->
     </q-header>
 
     <!-- Основной контент -->
