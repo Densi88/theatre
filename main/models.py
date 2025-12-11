@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Actor(models.Model): 
     name=models.TextField(verbose_name="ФИО")
     bio=models.TextField(verbose_name="Биография", blank=True)
-    photo=models.ImageField(upload_to='actors/', blank=True, null=True)
+    photo=models.ImageField(upload_to='', blank=True, null=True)
     class Meta:
         verbose_name="Актер"
         verbose_name_plural="Актеры" 

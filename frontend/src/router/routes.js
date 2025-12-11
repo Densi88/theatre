@@ -29,8 +29,16 @@ const routes = [
         name: 'my-tickets'
       },
       { path: '/login', 
-        component: () => import('src/pages/LoginPage.vue'),
+        component: () => import('pages/LoginPage.vue'),
         name: 'login'
+      },
+      { path: '/actors', 
+        component: () => import('pages/ActorsPage.vue'),
+        name: 'actors'
+      },
+      { path: '/genres', 
+        component: () => import('pages/GenresPage.vue'),
+        name: 'genres'
       },
     ]
   },

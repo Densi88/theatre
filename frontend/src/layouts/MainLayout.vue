@@ -4,7 +4,7 @@
     <q-header elevated class="bg-grey-9 text-white">
       <q-toolbar>
         <q-btn flat to="/">
-          <img src="theatre_logo.jpg" height="105"  />
+          <img src="theatre_logo.jpg" height="105" />
         </q-btn>
         <q-btn flat label="Главная" to="/" />
         <q-btn flat label="Спектакли" to="/shows" />
@@ -14,11 +14,7 @@
         <q-btn flat label="Купить билеты" to="/buy-tickets"></q-btn>
         <q-btn flat label="Админка" href="http://localhost:8000/admin/" target="_blank" />
 
-        <q-btn-dropdown
-          flat
-          color="white"
-          label="Прочее"
-        >
+        <q-btn-dropdown flat color="white" label="Прочее">
           <q-list style="min-width: 180px">
             <q-item clickable v-ripple to="/actors">
               <q-item-section>Актеры</q-item-section>
@@ -31,9 +27,6 @@
         </q-btn-dropdown>
 
       </q-toolbar>
-
-      
-        <!-- ▲ Выпадающее меню -->
     </q-header>
 
     <!-- Основной контент -->
@@ -52,6 +45,4 @@
 <script>
 </script>
 
-<style>
-
-</style>
+<style></style>
