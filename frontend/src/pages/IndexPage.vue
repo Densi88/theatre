@@ -44,7 +44,7 @@
           {{ newsItem.description }}
         </div>
         <q-card-actions align="right">
-          <q-btn flat color="primary" icon="arrow_forward" label="Читать далее" @click.stop="viewNewDetail(showItem)" />
+          <q-btn flat color="primary" icon="arrow_forward" label="Читать далее" @click.stop="viewNewsDetail(newsItem)" />
         </q-card-actions>
       </div>
     </div>
@@ -55,8 +55,10 @@
 
 <script setup>
 import axios from "axios"
+import { useRouter } from 'vue-router'
 const shows = ref([])
 const news = ref([])
+const router = useRouter()
 import { ref, onMounted } from 'vue'
 const downloadFiveShows = async () => {
   const response = await axios.get('/api/shows')
@@ -74,6 +76,11 @@ const getImage = (imagePath) => {
   }
 
   return imagePath
+}
+
+const viewNewsDetail=(newsItem)=>{
+  router.push(`/news/${newsItem.id}`)
+  
 }
 
 onMounted(() => {
