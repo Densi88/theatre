@@ -40,7 +40,6 @@ class ShowNewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all().order_by('-published_at')  
     
     def get_queryset(self):
-        """Можно добавить фильтрацию новостей"""
         return News.objects.all().order_by('-published_at')
 
 class TicketViewSet(viewsets.ModelViewSet):
