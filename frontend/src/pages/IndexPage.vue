@@ -83,6 +83,10 @@ const viewNewsDetail=(newsItem)=>{
   
 }
 
+const viewShowDetail=(showItem)=>{
+  router.push(`/shows/${showItem.id}`)
+}
+
 onMounted(() => {
   downloadFiveShows()
   downloadFiveNews()

@@ -58,12 +58,14 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import axios from "axios"
+import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const shows = ref([])
 const loading = ref(false)
 // const currentPage = ref(1)
 // const itemsPerPage = ref(9)
 const totalCount = ref(0)
+const router = useRouter()
 
 const loadShows = async () => {
     loading.value = true
@@ -110,9 +112,8 @@ const truncateText = (text, maxLength = 150) => {
     return result
 }
 
-const viewShowDetail = (showItem) => {
-    console.log('Открыть детали спектакля:', showItem)
-    // Здесь будет переход на страницу деталей
+const viewShowDetail=(showItem)=>{
+  router.push(`/shows/${showItem.id}`)
 }
 
 const buyShow = (showItem) => {
