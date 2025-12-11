@@ -2,16 +2,27 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import View
 from django.db.models import Q
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action  # ← ДОБАВЬ!
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
+
+from rest_framework.authentication import SessionAuthentication
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return  # пропускаем проверк
 
 
 class ShowShowsViewSet(viewsets.ModelViewSet):
     serializer_class = ShowsSerializer
     queryset = Show.objects.filter(available=True)
+    parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [AllowAny]
+    authentication_classes = [CsrfExemptSessionAuthentication]
     
     def get_queryset(self):
         queryset = Show.objects.filter(available=True)
@@ -27,6 +38,7 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
             )
         
         return queryset.distinct()
+    
     
     @action(detail=True, methods=['get'])
     def sessions(self, request, pk=None):

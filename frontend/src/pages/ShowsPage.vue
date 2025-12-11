@@ -3,6 +3,11 @@
         Спектакли
     </div>
 
+    <div class="q-mb-md">
+        <q-btn color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+    </div>
+
+
     <div v-if="loading" class="row q-col-gutter-md">
         <div v-for="n in 3" :key="n" class="col-12 col-md-4">
             <q-card class="news-card">
@@ -52,6 +57,33 @@
         </div>
     </div>
 
+    <!-- Диалог добавления нового спектакля -->
+    <q-dialog v-model="addDialog">
+        <q-card style="min-width: 400px;">
+            <q-card-section>
+                <div class="text-h6">Добавить новый спектакль</div>
+            </q-card-section>
+
+            <q-card-section>
+                <q-input v-model="newShow.title" label="Название" outlined />
+                <q-input v-model="newShow.description" label="Описание" type="textarea" outlined class="q-mt-sm" />
+                <!-- Загрузка файла постера -->
+                <q-file v-model="newShow.poster" label="Постер спектакля" outlined accept="image/*" class="q-mt-sm" />
+                <q-select v-model="newShow.actor" :options="actors" label="Актеры" multiple emit-value map-options
+                    outlined class="q-mt-sm" />
+
+                <q-select v-model="newShow.genre" :options="genres" label="Жанры" multiple emit-value map-options
+                    outlined class="q-mt-sm" />
+                <q-input v-model="newShow.duration" label="Длительность" outlined class="q-mt-sm" />
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn flat label="Отмена" color="negative" v-close-popup />
+                <q-btn flat label="Добавить" color="primary" @click="submitAddShow" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+
 </template>
 
 <script setup>
@@ -66,6 +98,18 @@ const loading = ref(false)
 // const itemsPerPage = ref(9)
 const totalCount = ref(0)
 const router = useRouter()
+const actors = ref([])
+const genres = ref([])
+
+const addDialog = ref(false)
+const newShow = ref({
+    title: '',
+    description: '',
+    poster: null,
+    actor: [],
+    genre: [],
+    duration: ''
+})
 
 const loadShows = async () => {
     loading.value = true
@@ -112,16 +156,75 @@ const truncateText = (text, maxLength = 150) => {
     return result
 }
 
-const viewShowDetail=(showItem)=>{
-  router.push(`/shows/${showItem.id}`)
+const viewShowDetail = (showItem) => {
+    router.push(`/shows/${showItem.id}`)
 }
 
 const buyShow = (showItem) => {
     console.log('Купить билет на:', showItem)
     // Здесь будет логика покупки
 }
+
+// Открытие диалога
+const openAddDialog = () => {
+    newShow.value = { title: '', description: '', poster: '', genre: [], actor: [], duration: '' }
+    addDialog.value = true
+}
+
+const submitAddShow = async () => {
+    if (!newShow.value.title || !newShow.value.description) {
+        $q.notify({ type: 'warning', message: 'Заполните все поля' })
+        return
+    }
+
+    try {
+        const formData = new FormData()
+        formData.append('title', newShow.value.title)
+        formData.append('description', newShow.value.description)
+        formData.append('duration', newShow.value.duration)
+        console.log('actor:', newShow.value.actor, newShow.value.actor.map(a => typeof a))
+        console.log('genre:', newShow.value.genre, newShow.value.genre.map(g => typeof g))
+
+        // Жанры и актеры
+        newShow.value.actor.forEach(id => formData.append('actor', id))
+        newShow.value.genre.forEach(id => formData.append('genre', id))
+
+        console.log('poster объект:', newShow.value.poster)
+
+        if (newShow.value.poster) {
+            formData.append('poster', newShow.value.poster)
+        }
+
+        const response = await axios.post('/api/shows/', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+
+        $q.notify({ type: 'positive', message: 'Спектакль добавлен' })
+        shows.value.push(response.data)
+        addDialog.value = false
+    } catch (error) {
+        console.error(error)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка при добавлении',
+            caption: error.response?.data || error.message
+        })
+    }
+}
+const loadActorsAndGenres = async () => {
+    try {
+        const actorsResp = await axios.get('/api/actors')
+        actors.value = actorsResp.data.map(a => ({ label: a.name, value: a.id }))
+
+        const genresResp = await axios.get('/api/genres')
+        genres.value = genresResp.data.map(g => ({ label: g.genre_name, value: g.id }))
+    } catch (error) {
+        $q.notify({ type: 'negative', message: 'Ошибка при загрузке актеров или жанров', caption: error.message })
+    }
+}
 onMounted(() => {
     loadShows()
+    loadActorsAndGenres()
 })
 
 </script>

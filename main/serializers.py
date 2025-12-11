@@ -35,11 +35,22 @@ class NewsSerializer(serializers.ModelSerializer):
         fields=['id', 'published_at', 'description', 'news_image' ]
 
 class ShowsSerializer(serializers.ModelSerializer):
-    genre=GenreSerializer(many=True)
-    actor=ActorSerializer(many=True)
+    genre = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True)
+    actor = serializers.PrimaryKeyRelatedField(queryset=Actor.objects.all(), many=True)
+    poster = serializers.ImageField(required=False)
+
     class Meta:
-        model=Show
-        fields=['id', 'title', 'description', 'duration', 'genre', 'actor', 'poster', 'available']
+        model = Show
+        fields = ['id', 'title', 'description', 'duration', 'genre', 'actor', 'poster', 'available']
+
+    def create(self, validated_data):
+        actors = validated_data.pop('actor', [])
+        genres = validated_data.pop('genre', [])
+        validated_data['available'] = True
+        show = Show.objects.create(**validated_data)
+        show.actor.set(actors)
+        show.genre.set(genres)
+        return show
 
 class SessionSerializer(serializers.ModelSerializer):
     hall=HallSerializer()
