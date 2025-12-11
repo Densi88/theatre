@@ -53,11 +53,13 @@
                 <q-card-actions align="right">
                     <q-btn flat color="primary" icon="arrow_forward" label="Купить" @click.stop="buyShow(showItem)" />
                 </q-card-actions>
+                <div class="q-mb-md">
+                    <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
+                </div>
             </q-card>
         </div>
     </div>
 
-    <!-- Диалог добавления нового спектакля -->
     <q-dialog v-model="addDialog">
         <q-card style="min-width: 400px;">
             <q-card-section>
@@ -221,6 +223,25 @@ const loadActorsAndGenres = async () => {
     } catch (error) {
         $q.notify({ type: 'negative', message: 'Ошибка при загрузке актеров или жанров', caption: error.message })
     }
+}
+
+const deleteShow=async(showItem)=>{
+    try {
+    const confirmDelete = window.confirm(`Удалить спектакль "${showItem.title}"?`)
+    if (!confirmDelete) return
+    await axios.delete(`/api/shows/${showItem.id}/`) // обратите внимание на слэш в конце!
+
+    shows.value = shows.value.filter(s => s.id !== showItem.id)
+
+    $q.notify({ type: 'positive', message: 'Спектакль удалён' })
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Ошибка при удалении',
+      caption: error.response?.data || error.message
+    })
+  } 
 }
 onMounted(() => {
     loadShows()
