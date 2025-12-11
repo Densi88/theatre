@@ -84,6 +84,7 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import axios from "axios"
+import { useRouter } from 'vue-router'
 
 
 const $q = useQuasar()
@@ -93,6 +94,9 @@ const currentPage = ref(1)
 const itemsPerPage = ref(9)
 const totalCount = ref(0)
 const sortOrder = ref('-published_at')
+
+
+const router = useRouter()
 
 const loadNews = async () => {
   loading.value = true
@@ -108,7 +112,6 @@ const loadNews = async () => {
     news.value = response.data.results || response.data
     totalCount.value = response.data.count || response.data.length
     
-    // Проверяем структуру ответа
     if (response.data.results) {
       news.value = response.data.results
       totalCount.value = response.data.count || 0
@@ -172,6 +175,11 @@ const getFirstTwoSentences = (text) => {
   
   const result = truncateText(firstTwo, 200)
   return result
+}
+
+const viewNewsDetail=(newsItem)=>{
+  router.push(`/news/${newsItem.id}`)
+  
 }
 
 onMounted(() => {
