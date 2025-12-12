@@ -49,7 +49,9 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
 
 class ShowNewsViewSet(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
-    queryset = News.objects.all().order_by('-published_at')  
+    queryset = News.objects.all().order_by('-published_at')
+    permission_classes = [AllowAny]
+    authentication_classes = [CsrfExemptSessionAuthentication]  
     
     def get_queryset(self):
         return News.objects.all().order_by('-published_at')

@@ -35,6 +35,18 @@ class NewsSerializer(serializers.ModelSerializer):
         model=News
         fields=['id', 'published_at', 'description', 'news_image' ]
 
+
+    def create(self, validated_data):
+        news = News.objects.create(**validated_data)
+        return news
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 class ShowsSerializer(serializers.ModelSerializer):
     genre = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True)
     actor = serializers.PrimaryKeyRelatedField(queryset=Actor.objects.all(), many=True)
@@ -63,7 +75,6 @@ class ShowsSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        # M2M поля
         if actors is not None:
             instance.actor.set(actors)
         if genres is not None:

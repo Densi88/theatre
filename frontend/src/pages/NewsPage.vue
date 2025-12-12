@@ -2,6 +2,10 @@
   <div class="text-h4 text-weight-bold q-mb-md">
     Новости нашего театра
   </div>
+  <div class="q-mb-md">
+        <q-btn color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+    </div>
+
 
    <div v-if="loading" class="row q-col-gutter-md">
       <div v-for="n in 3" :key="n" class="col-12 col-md-4">
@@ -35,17 +39,8 @@
             <!-- Дата публикации поверх картинки -->
             <div class="absolute-top-right bg-primary text-white q-pa-xs q-ma-sm rounded-borders">
               <div class="text-caption text-weight-bold">
-                {{ formatDate(newsItem.published_at) }}
+                {{formattedDate(newsItem.published_at)}}
               </div>
-            </div>
-            
-            <!-- Лейбл "Новое" для свежих новостей -->
-            <div 
-              v-if="isNewNews(newsItem.published_at)"
-              class="absolute-top-left bg-positive text-white q-pa-xs q-ma-sm rounded-borders"
-            >
-              <q-icon name="fiber_new" size="sm" />
-              <span class="text-caption q-ml-xs">Новое</span>
             </div>
           </q-img>
           
@@ -72,9 +67,36 @@
               @click.stop="viewNewsDetail(newsItem)"
             />
           </q-card-actions>
+          <q-card-actions align="left">
+                    <div class="q-mb-md">
+                        <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteNew(newsItem)" />
+                    </div>
+                    <div class="q-mb-md">
+                        <q-btn color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(newsItem)" />
+                    </div>
+                </q-card-actions>
         </q-card>
       </div>
     </div>
+
+    <q-dialog v-model="addDialog">
+        <q-card style="min-width: 400px;">
+            <q-card-section>
+                <div class="text-h6">Добавить новую новость</div>
+            </q-card-section>
+
+            <q-card-section>
+                <q-input v-model="newNews.title" label="Заголовок" outlined />
+                <q-input v-model="newNews.description" label="Текст" type="textarea" outlined class="q-mt-sm" />
+                <q-file v-model="newNews.news_image" label="Картинка" outlined accept="image/*" class="q-mt-sm" />
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn flat label="Отмена" color="negative" v-close-popup />
+                <q-btn flat label="Добавить" color="primary" @click="submitAdd()" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
     
 
     
@@ -85,6 +107,7 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import axios from "axios"
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 
 
 const $q = useQuasar()
@@ -94,6 +117,13 @@ const currentPage = ref(1)
 const itemsPerPage = ref(9)
 const totalCount = ref(0)
 const sortOrder = ref('-published_at')
+const addDialog=ref(false)
+const newNews = ref({
+    title: '',
+    description: '',
+    news_image: null,
+    published_at: ''
+})
 
 
 const router = useRouter()
@@ -134,6 +164,20 @@ const loadNews = async () => {
     loading.value = false
   }
 }
+
+const formattedDate = computed(() => {
+  return (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+})
 
 const getImageUrl = (imagePath) => {
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -178,8 +222,45 @@ const getFirstTwoSentences = (text) => {
 }
 
 const viewNewsDetail=(newsItem)=>{
-  router.push(`/news/${newsItem.id}`)
-  
+  router.push(`/news/${newsItem.id}`)  
+}
+const openAddDialog=()=>{
+  const currentTime = new Date().toISOString()
+  newNews.value={title: '', description:'', published_at: currentTime}
+  addDialog.value=true
+}
+const  submitAdd=async()=>{
+   if (!newNews.value.title || !newNews.value.description) {
+        $q.notify({ type: 'warning', message: 'Заполните все поля' })
+        return
+    }
+
+    try {
+        const formData = new FormData()
+        formData.append('title', newNews.value.title)
+        formData.append('description', newNews.value.description)
+
+        if (newNews.value.news_image) {
+            formData.append('news_image', newNews.value.news_image)
+        }
+
+        const response = await axios.post('/api/news/', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+
+        $q.notify({ type: 'positive', message: 'Новость добавлена' })
+        news.value.push(response.data)
+        addDialog.value = false
+    } catch (error) {
+        console.error(error)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка при добавлении',
+            caption: error.response?.data || error.message
+        })
+    }
+
+
 }
 
 onMounted(() => {
