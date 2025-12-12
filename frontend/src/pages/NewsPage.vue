@@ -322,6 +322,25 @@ const submitUpdate=async()=>{
     }
 
 }
+const deleteNew=async(newsItem)=>{
+  try {
+        const confirmDelete = window.confirm(`Удалить новость?`)
+        if (!confirmDelete) return
+        await axios.delete(`/api/news/${newsItem.id}/`)
+
+        news.value = news.value.filter(s => s.id !== newsItem.id)
+
+        $q.notify({ type: 'positive', message: 'Новость удалена' })
+    } catch (error) {
+        console.error(error)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка при удалении',
+            caption: error.response?.data || error.message
+        })
+    }
+
+}
 
 onMounted(() => {
   loadNews()
