@@ -20,7 +20,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 class ShowShowsViewSet(viewsets.ModelViewSet):
     serializer_class = ShowsSerializer
     queryset = Show.objects.filter(available=True)
-    parser_classes = [MultiPartParser, FormParser]
+    #parser_classes = [MultiPartParser, FormParser]
     permission_classes = [AllowAny]
     authentication_classes = [CsrfExemptSessionAuthentication]
     

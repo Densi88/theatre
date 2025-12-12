@@ -103,11 +103,11 @@
                 <!-- Загрузка файла постера -->
                 <q-file v-model="updatedShow.poster" label="Постер спектакля" outlined accept="image/*"
                     class="q-mt-sm" />
-                <q-select v-model="updatedShow.actor" :options="actors" label="Актеры" multiple emit-value map-options
-                    outlined class="q-mt-sm" />
+                <q-select v-model="updatedShow.actor" :options="actors" label="Актеры" multiple emit-value
+                    option-value="value" option-label="label" use-input outlined class="q-mt-sm" />
 
-                <q-select v-model="updatedShow.genre" :options="genres" label="Жанры" multiple emit-value map-options
-                    outlined class="q-mt-sm" />
+                <q-select v-model="updatedShow.genre" :options="genres" label="Жанры" multiple emit-value
+                    option-value="value" option-label="label" use-input class="q-mt-sm" />
                 <q-input v-model="updatedShow.duration" label="Длительность" outlined class="q-mt-sm" />
             </q-card-section>
 
@@ -258,15 +258,25 @@ const submitAddShow = async () => {
 const loadActorsAndGenres = async () => {
     try {
         const actorsResp = await axios.get('/api/actors')
-        actors.value = actorsResp.data.map(a => ({ label: a.name, value: a.id }))
+        actors.value = actorsResp.data.map(a => ({
+            label: a.name,
+            value: String(a.id)  
+        }))
+        console.log('Actors loaded:', actors.value)
 
         const genresResp = await axios.get('/api/genres')
-        genres.value = genresResp.data.map(g => ({ label: g.genre_name, value: g.id }))
-    } catch (error) {
-        $q.notify({ type: 'negative', message: 'Ошибка при загрузке актеров или жанров', caption: error.message })
-    }
-}
+        genres.value = genresResp.data.map(g => ({
+            label: g.genre_name,
+            value: String(g.id) 
+        }))
+        console.log('Genres loaded:', genres.value)
 
+    } catch (error) {
+        console.error('Ошибка загрузки:', error)
+    }
+    console.log('actors array:', actors.value)
+    console.log('first actor:', actors.value[0])
+}
 const deleteShow = async (showItem) => {
     try {
         const confirmDelete = window.confirm(`Удалить спектакль "${showItem.title}"?`)
@@ -288,9 +298,19 @@ const deleteShow = async (showItem) => {
 const openUpdateDialog = (showItem) => {
     console.log(showItem.actor)
     console.log(showItem.genre)
+    const actorIds = showItem.actor.map(a => {
+        const id = typeof a === 'object' ? a.id : a
+        return String(id)  // ← В строку!
+    })
+    
+    const genreIds = showItem.genre.map(g => {
+        const id = typeof g === 'object' ? g.id : g
+        return String(id)  // ← В строку!
+    })
+    
     updatedShow.value = {
-        id: showItem.id, title: showItem.title, description: showItem.description, poster: showItem.poster, actor: showItem.actor.map(a => a.id),
-        genre: showItem.genre.map(g => g.id), duration: showItem.duration
+        id: showItem.id, title: showItem.title, description: showItem.description, poster: showItem.poster, actor:actorIds,
+        genre: genreIds, duration: showItem.duration
     }
     updateDialog.value = true
 
@@ -300,29 +320,48 @@ const updateShow = async () => {
         const formData = new FormData()
         formData.append('title', updatedShow.value.title)
         formData.append('description', updatedShow.value.description)
-        formData.append('duration', updatedShow.value.duration)
-
+        formData.append('duration', String(updatedShow.value.duration))
         updatedShow.value.actor.forEach(id => {
-            formData.append('actor', id)
+            const cleanId = String(id).replace(/^,/, '').trim()
+            if (cleanId) formData.append('actor', cleanId)
         })
-
+        
         updatedShow.value.genre.forEach(id => {
-            formData.append('genre', id)
+            const cleanId = String(id).replace(/^,/, '').trim()
+            if (cleanId) formData.append('genre', cleanId)
         })
+        
+        // КЛЮЧЕВОЕ: проверяем, это файл или URL
         if (updatedShow.value.poster instanceof File) {
             formData.append('poster', updatedShow.value.poster)
+            console.log('Adding new poster file:', updatedShow.value.poster.name)
+        } else if (updatedShow.value.poster) {
+            console.log('Keeping old poster:', updatedShow.value.poster)
         }
-
+        
+        console.log('FormData contents:')
+        for (let [key, value] of formData.entries()) {
+            console.log(key, ':', value, 'type:', typeof value)
+        }
+        
         const response = await axios.patch(
             `/api/shows/${updatedShow.value.id}/`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
+            formData  
         )
-
-        console.log('Updated:', response.data)
-
+        
+        console.log('Success!', response.data)
+        $q.notify({ type: 'positive', message: 'Спектакль обновлён!' })
+        await loadShows()
+        updateDialog.value = false
+        
     } catch (error) {
-        console.log("Update error:", error.response?.data)
+        console.error('Full error:', error)
+        console.error('Response data:', error.response?.data)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка обновления',
+            caption: error.response?.data ? JSON.stringify(error.response.data) : error.message
+        })
     }
 }
 
