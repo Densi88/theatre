@@ -281,7 +281,7 @@ const deleteShow = async (showItem) => {
     try {
         const confirmDelete = window.confirm(`Удалить спектакль "${showItem.title}"?`)
         if (!confirmDelete) return
-        await axios.delete(`/api/shows/${showItem.id}/`) // обратите внимание на слэш в конце!
+        await axios.delete(`/api/shows/${showItem.id}/`)
 
         shows.value = shows.value.filter(s => s.id !== showItem.id)
 

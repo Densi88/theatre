@@ -86,7 +86,6 @@
             </q-card-section>
 
             <q-card-section>
-                <q-input v-model="newNews.title" label="Заголовок" outlined />
                 <q-input v-model="newNews.description" label="Текст" type="textarea" outlined class="q-mt-sm" />
                 <q-file v-model="newNews.news_image" label="Картинка" outlined accept="image/*" class="q-mt-sm" />
             </q-card-section>
@@ -97,6 +96,25 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
+
+    <q-dialog v-model="updateDialog">
+        <q-card style="min-width: 400px;">
+            <q-card-section>
+                <div class="text-h6">Редактировать новость</div>
+            </q-card-section>
+
+            <q-card-section>
+                <q-input v-model="updateNews.description" label="Текст" type="textarea" outlined class="q-mt-sm" />
+                <q-file v-model="updateNews.news_image" label="Картинка" outlined accept="image/*" class="q-mt-sm" />
+            </q-card-section>
+
+            <q-card-actions align="right">
+                <q-btn flat label="Отмена" color="negative" v-close-popup />
+                <q-btn flat label="Редактировать" color="primary" @click="submitUpdate()" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+    
     
 
     
@@ -118,11 +136,16 @@ const itemsPerPage = ref(9)
 const totalCount = ref(0)
 const sortOrder = ref('-published_at')
 const addDialog=ref(false)
+const updateDialog=ref(false)
 const newNews = ref({
-    title: '',
     description: '',
     news_image: null,
     published_at: ''
+})
+const updateNews=ref({
+  id: '',
+  description: '',
+  news_image: null,
 })
 
 
@@ -230,14 +253,13 @@ const openAddDialog=()=>{
   addDialog.value=true
 }
 const  submitAdd=async()=>{
-   if (!newNews.value.title || !newNews.value.description) {
+   if (!newNews.value.description) {
         $q.notify({ type: 'warning', message: 'Заполните все поля' })
         return
     }
 
     try {
         const formData = new FormData()
-        formData.append('title', newNews.value.title)
         formData.append('description', newNews.value.description)
 
         if (newNews.value.news_image) {
@@ -259,7 +281,45 @@ const  submitAdd=async()=>{
             caption: error.response?.data || error.message
         })
     }
+}
+const openUpdateDialog=(newsItem)=>{
+  updateNews.value={id:newsItem.id, description:newsItem.description, news_image: newsItem.news_image}
+  updateDialog.value=true
 
+}
+const submitUpdate=async()=>{
+  try {
+        const formData = new FormData()
+        formData.append('description', updateNews.value.description)
+        if (updateNews.value.news_image instanceof File) {
+            formData.append('news_image', updateNews.value.news_image)
+        } else if (updateNews.value.news_image) {
+            console.log('Keeping old poster:', updateNews.value.news_image)
+        }
+        console.log('FormData contents:')
+        for (let [key, value] of formData.entries()) {
+            console.log(key, ':', value, 'type:', typeof value)
+        }
+        
+        const response = await axios.patch(
+            `/api/news/${updateNews.value.id}/`,
+            formData  
+        )
+        
+        console.log('Success!', response.data)
+        $q.notify({ type: 'positive', message: 'Новость обновлена!' })
+        await loadNews()
+        updateDialog.value = false
+        
+    } catch (error) {
+        console.error('Full error:', error)
+        console.error('Response data:', error.response?.data)
+        $q.notify({
+            type: 'negative',
+            message: 'Ошибка обновления',
+            caption: error.response?.data ? JSON.stringify(error.response.data) : error.message
+        })
+    }
 
 }
 
