@@ -5,6 +5,7 @@ from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
@@ -205,10 +206,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     api_view(['POST'])
     permission_classes([AllowAny])
+    authentication_classes = [CsrfExemptSessionAuthentication]
+
+@api_view(['POST'])
+@csrf_exempt  
 def login_view(request):
     serializer = LoginSerializer(data=request.data)
-    permission_classes = [AllowAny]
-    authentication_classes = [CsrfExemptSessionAuthentication]  
+    
     if serializer.is_valid():
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']

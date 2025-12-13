@@ -124,6 +124,9 @@ class TicketSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+    class Meta:
+        model=UserProfile
+        fields=['username', 'password']
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
