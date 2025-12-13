@@ -133,3 +133,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     birth_date = serializers.DateField()
     passport_series = serializers.IntegerField()
     passport_number = serializers.IntegerField()
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'password', 'email', 'full_name', 
+                 'birth_date', 'passport_series', 'passport_number']

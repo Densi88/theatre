@@ -10,6 +10,7 @@
         <q-btn flat label="Спектакли" to="/shows" />
         <q-btn flat label="Новости" to="/news" />
         <q-btn flat label="Мои билеты" to="/my-tickets" />
+        <q-btn flat label="Регистрация" to="/registration" />
         <q-btn flat label="Войти" to="/login" />
         <q-btn flat label="Купить билеты" to="/buy-tickets"></q-btn>
         <q-btn flat label="Админка" href="http://localhost:8000/admin/" target="_blank" />

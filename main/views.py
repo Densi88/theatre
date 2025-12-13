@@ -207,6 +207,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     permission_classes([AllowAny])
 def login_view(request):
     serializer = LoginSerializer(data=request.data)
+    permission_classes = [AllowAny]
+    authentication_classes = [CsrfExemptSessionAuthentication]  
     if serializer.is_valid():
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
@@ -244,6 +246,8 @@ def login_view(request):
 @permission_classes([AllowAny])
 def register_view(request):
     serializer = RegisterSerializer(data=request.data)
+    permission_classes = [AllowAny]
+    authentication_classes = [CsrfExemptSessionAuthentication]  
     if serializer.is_valid():
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']

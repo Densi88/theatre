@@ -18,7 +18,9 @@ router.register(r'news', views.ShowNewsViewSet, basename='news')
 router.register(r'users', views.UserProfileViewSet, basename='userprofile')
 
 urlpatterns=[
-     path('', include(router.urls)),   
+     path('', include(router.urls)),
+     path('api/auth/login/', views.login_view, name='login'),
+     path('api/auth/register/', views.register_view, name='login'),
 ]
 
 if settings.DEBUG:

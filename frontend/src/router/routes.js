@@ -54,6 +54,11 @@ const routes = [
         name: 'news-detail',
         component: () => import('pages/NewsDetail.vue')
       },
+      {
+        path: 'registration',
+        name: 'registration',
+        component: () => import('pages/RegistrationPage.vue')
+      },
     ]
   },
 
