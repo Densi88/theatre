@@ -22,6 +22,16 @@ class ActorSerializer(serializers.ModelSerializer):
     class Meta:
         model=Actor
         fields="__all__"
+    def create(self, validated_data):
+        actor = Actor.objects.create(**validated_data)
+        return actor
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 class GenreSerializer(serializers.ModelSerializer):
