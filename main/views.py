@@ -4,11 +4,13 @@ from django.views import View
 from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import viewsets, status, permissions
-from rest_framework.decorators import action  # ← ДОБАВЬ!
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer
+from django.contrib.auth import authenticate, login, logout
+from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, LoginSerializer, RegisterSerializer
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
+from django.contrib.auth.models import User
 
 from rest_framework.authentication import SessionAuthentication
 
@@ -201,6 +203,95 @@ class ShowSessionsViewSet(viewsets.ModelViewSet):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    api_view(['POST'])
+    permission_classes([AllowAny])
+def login_view(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            
+            try:
+                profile = UserProfile.objects.get(user=user)
+                role = profile.role
+            except UserProfile.DoesNotExist:
+                role = 'user'
+            
+            return Response({
+                'success': True,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': role
+                },
+                'message': 'Вход выполнен'
+            })
+        else:
+            return Response({
+                'success': False,
+                'message': 'Неверные учетные данные'
+            }, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_view(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        email = serializer.validated_data.get('email', '')
+        
+        if User.objects.filter(username=username).exists():
+            return Response({
+                'success': False,
+                'message': 'Пользователь с таким именем уже существует'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Создаем пользователя
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email
+            )
+            
+            profile = UserProfile.objects.create(
+                user=user,
+                full_name=serializer.validated_data['full_name'],
+                birth_date=serializer.validated_data['birth_date'],
+                passport_series=serializer.validated_data['passport_series'],
+                passport_number=serializer.validated_data['passport_number'],
+                role='user'  
+            )
+            
+            login(request, user)
+            
+            return Response({
+                'success': True,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': 'user'
+                },
+                'message': 'Регистрация успешна'
+            })
+            
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': f'Ошибка регистрации: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()

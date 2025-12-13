@@ -121,3 +121,15 @@ class TicketSerializer(serializers.ModelSerializer):
         model=Ticket
         fields=['id', 'row', 'seat', 'status', 'price', 'show', 'user']
 
+class LoginSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(required=False)
+    full_name = serializers.CharField()
+    birth_date = serializers.DateField()
+    passport_series = serializers.IntegerField()
+    passport_number = serializers.IntegerField()

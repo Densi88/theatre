@@ -56,6 +56,12 @@ class UserProfile(models.Model):
     passport_series=models.IntegerField()
     full_name=models.TextField("ФИО")
     birth_date=models.DateField()
+    ROLE_CHOICES = [
+        ('admin', 'Администратор'),
+        ('user', 'Пользователь'),
+        ('staff', 'Персонал'),
+    ]
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     class Meta:
         verbose_name="Пользователь"
         verbose_name_plural="Пользователи"
