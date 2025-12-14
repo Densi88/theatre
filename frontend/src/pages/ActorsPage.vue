@@ -1,6 +1,6 @@
 <template>
     <div class="q-mb-md">
-        <q-btn color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
     <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="actorItem in actors" :key="actorItem.id">
@@ -20,10 +20,10 @@
                 </q-card-actions>
                 <q-card-actions align="left">
                     <div class="q-mb-md">
-                        <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteActor(actorItem)" />
+                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Удалить" @click.stop="deleteActor(actorItem)" />
                     </div>
                     <div class="q-mb-md">
-                        <q-btn color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(actorItem)" />
+                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(actorItem)" />
                     </div>
                 </q-card-actions>
             </div>
@@ -77,6 +77,8 @@ import axios from "axios"
 const actors = ref([])
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { useAuthStore } from 'stores/auth'
+const authStore=useAuthStore()
 
 const newActor=ref({
     name:'',

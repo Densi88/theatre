@@ -4,7 +4,7 @@
     </div>
 
     <div class="q-mb-md">
-        <q-btn color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
 
 
@@ -55,10 +55,10 @@
                 </q-card-actions>
                 <q-card-actions align="left">
                     <div class="q-mb-md">
-                        <q-btn color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
+                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
                     </div>
                     <div class="q-mb-md">
-                        <q-btn color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
+                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
                     </div>
                 </q-card-actions>
             </q-card>
@@ -126,6 +126,8 @@ import { useQuasar } from 'quasar'
 import axios from "axios"
 import { useRouter } from 'vue-router'
 const $q = useQuasar()
+import { useAuthStore } from 'stores/auth'
+const authStore=useAuthStore()
 const shows = ref([])
 const loading = ref(false)
 // const currentPage = ref(1)
