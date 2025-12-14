@@ -1,10 +1,10 @@
 <template>
-    <div class="text-h4 text-weight-bold q-mb-md">
+    <div class="text-h4 text-weight-bold q-ma-xs">
         Спектакли
     </div>
 
-    <div class="q-mb-md">
-        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+    <div class="q-ma-xs">
+        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
 
 
@@ -54,11 +54,11 @@
                     <q-btn flat color="primary" icon="arrow_forward" label="Купить" @click.stop="buyShow(showItem)" />
                 </q-card-actions>
                 <q-card-actions align="left">
-                    <div class="q-mb-md">
-                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Удалить" @click.stop="deleteShow(showItem)" />
+                    <div class="q-ma-xs">
+                        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="delete" label="Удалить" @click.stop="deleteShow(showItem)" />
                     </div>
-                    <div class="q-mb-md">
-                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
+                    <div class="q-ma-xs">
+                        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
                     </div>
                 </q-card-actions>
             </q-card>

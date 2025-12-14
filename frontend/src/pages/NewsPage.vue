@@ -1,9 +1,9 @@
 <template>
-  <div class="text-h4 text-weight-bold q-mb-md">
+  <div class="text-h4 text-weight-bold q-ma-xs">
     Новости нашего театра
   </div>
-  <div class="q-mb-md">
-        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+  <div class="q-ma-xs">
+        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
 
 
@@ -37,7 +37,7 @@
             class="news-image"
           >
             <!-- Дата публикации поверх картинки -->
-            <div class="absolute-top-right bg-primary text-white q-pa-xs q-ma-sm rounded-borders">
+            <div class="absolute-top-right bg-grey-9 text-white q-pa-xs q-ma-sm rounded-borders">
               <div class="text-caption text-weight-bold">
                 {{formattedDate(newsItem.published_at)}}
               </div>
@@ -68,11 +68,11 @@
             />
           </q-card-actions>
           <q-card-actions align="left">
-                    <div class="q-mb-md">
-                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Удалить" @click.stop="deleteNew(newsItem)" />
+                    <div class="q-ma-xs">
+                        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="delete" label="Удалить" @click.stop="deleteNew(newsItem)" />
                     </div>
-                    <div class="q-mb-md">
-                        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Изменить" @click.stop="openUpdateDialog(newsItem)" />
+                    <div class="q-ma-xs">
+                        <q-btn v-if="authStore.isAdmin" color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(newsItem)" />
                     </div>
                 </q-card-actions>
         </q-card>
