@@ -12,7 +12,6 @@
         <q-btn flat label="Мои билеты" to="/my-tickets" />
         <q-btn flat label="Регистрация" to="/registration" />
         <q-btn flat label="Войти" to="/login" />
-        <q-btn flat label="Купить билеты" to="/buy-tickets"></q-btn>
         <q-btn flat label="Админка" href="http://localhost:8000/admin/" target="_blank" />
 
         <q-btn-dropdown flat color="white" label="Прочее">

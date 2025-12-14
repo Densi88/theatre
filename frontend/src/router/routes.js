@@ -25,11 +25,6 @@ const routes = [
         name: 'news'
       },
       {
-        path: 'buy-tickets',
-        component: () => import('pages/BuyTicketsPage.vue'),
-        name: 'buy tickets'
-      },
-      {
         path: 'my-tickets',
         component: () => import('pages/MyTicketsPage.vue'),
         name: 'my-tickets'
