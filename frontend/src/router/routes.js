@@ -49,6 +49,21 @@ const routes = [
         name: 'news-detail',
         component: () => import('pages/NewsDetail.vue')
       },
+        {
+        path: 'tickets',
+        component: () => import('pages/BuyTicketPage.vue'),
+        name: 'show'
+      },
+       {
+        path: 'shows/:id/sessions',
+        component: () => import('pages/SessionsPage.vue'),
+        name: 'sessions'
+      },
+       {
+        path: 'sessions/:id/seats',
+        component: () => import('pages/HallPage.vue'),
+        name: 'seats'
+      },
       {
         path: 'registration',
         name: 'registration',

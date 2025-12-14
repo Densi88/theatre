@@ -99,7 +99,7 @@ class SessionSerializer(serializers.ModelSerializer):
     show=ShowsSerializer()
     class Meta:
         model=Session
-        fields=['date', 'show', 'hall_rows', 'hall_seats', 'hall']
+        fields=['id', 'date', 'show', 'hall_rows', 'hall_seats', 'hall']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -119,7 +119,7 @@ class TicketSerializer(serializers.ModelSerializer):
     user=UserProfileSerializer()
     class Meta:
         model=Ticket
-        fields=['id', 'row', 'seat', 'status', 'price', 'show', 'user']
+        fields=['id', 'row', 'seat', 'status', 'price', 'session', 'user']
 
 class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField()

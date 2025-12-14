@@ -208,7 +208,7 @@ const viewShowDetail = (showItem) => {
 
 const buyShow = (showItem) => {
     console.log('Купить билет на:', showItem)
-    // Здесь будет логика покупки
+    router.push(`/shows/${showItem.id}/sessions`)
 }
 
 // Открытие диалога
@@ -366,6 +366,7 @@ const updateShow = async () => {
         })
     }
 }
+
 
 onMounted(() => {
     loadShows()

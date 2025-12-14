@@ -61,7 +61,7 @@ class ShowNewsViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
     queryset = Ticket.objects.filter(status=True)
-    permission_classes=[Auth_permission]
+    permission_classes=[AllowAny]
     
     def create(self, request):
         """Покупка билета - POST /api/tickets/"""
@@ -129,18 +129,18 @@ class TicketViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def available(self, request):
         """Проверить доступность места: /api/tickets/available/?show=1&row=5&seat=10"""
-        show_id = request.query_params.get('show')
+        session_id = request.query_params.get('show')
         row = request.query_params.get('row')
         seat = request.query_params.get('seat')
         
-        if not all([show_id, row, seat]):
+        if not all([session_id, row, seat]):
             return Response(
                 {'error': 'Укажите show, row и seat'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         is_occupied = Ticket.objects.filter(
-            show_id=show_id,
+            session_id=session_id,
             row=row,
             seat=seat,
             status=True
@@ -148,7 +148,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         
         return Response({
             'available': not is_occupied,
-            'show_id': show_id,
+            'session_id': session_id,
             'row': row,
             'seat': seat,
             'is_occupied': is_occupied
@@ -176,7 +176,7 @@ class ShowSessionsViewSet(viewsets.ModelViewSet):
     def seats(self, request, pk=None):
         """Схема мест: /api/sessions/1/seats/"""
         session = self.get_object()
-        occupied_seats = Ticket.objects.filter(show=session.show, status=True)
+        occupied_seats = Ticket.objects.filter(session=session, status=True)
         
         seats_matrix = []
         for row in range(1, session.hall_rows + 1):

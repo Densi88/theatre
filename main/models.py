@@ -72,7 +72,7 @@ class Ticket(models.Model):
     seat=models.IntegerField()
     status=models.BooleanField()
     price=models.IntegerField()
-    show=models.ForeignKey(Session, on_delete=models.CASCADE)
+    session=models.ForeignKey(Session, on_delete=models.CASCADE)
     user=models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     class Meta:
         verbose_name="Билет"
