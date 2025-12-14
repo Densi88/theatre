@@ -10,6 +10,13 @@ class Read_only_permission(permissions.BasePermission):
              return True
         return request.user.is_authenticated and request.user.userprofile.role == 'admin'
      
+class Auth_permission(permissions.BasePermission):
+    def has_permission(self, request):
+        if(request.method in permissions.SAFE_METHODS):
+             return True
+        return request.user.is_authenticated
+
+     
 
 
 

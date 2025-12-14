@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, LoginSerializer, RegisterSerializer
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
 from django.contrib.auth.models import User
+from .permissions import Read_only_permission, Auth_permission
 
 from rest_framework.authentication import SessionAuthentication
 
@@ -24,7 +25,7 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
     serializer_class = ShowsSerializer
     queryset = Show.objects.filter(available=True)
     #parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [AllowAny]
+    permission_classes = [Read_only_permission]
     authentication_classes = [CsrfExemptSessionAuthentication]
     
     def get_queryset(self):
@@ -53,7 +54,7 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
 class ShowNewsViewSet(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
     queryset = News.objects.all().order_by('-published_at')
-    permission_classes = [AllowAny]
+    permission_classes = [Read_only_permission]
     authentication_classes = [CsrfExemptSessionAuthentication]  
     
     def get_queryset(self):
@@ -62,6 +63,7 @@ class ShowNewsViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
     queryset = Ticket.objects.filter(status=True)
+    permission_classes=[Auth_permission]
     
     def create(self, request):
         """Покупка билета - POST /api/tickets/"""
@@ -308,5 +310,5 @@ class GenreViewSet(viewsets.ModelViewSet):
 class ActorViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [Read_only_permission]
     authentication_classes = [CsrfExemptSessionAuthentication]  
