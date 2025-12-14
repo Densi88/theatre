@@ -26,7 +26,6 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.filter(available=True)
     #parser_classes = [MultiPartParser, FormParser]
     permission_classes = [Read_only_permission]
-    authentication_classes = [CsrfExemptSessionAuthentication]
     
     def get_queryset(self):
         queryset = Show.objects.filter(available=True)
@@ -55,7 +54,6 @@ class ShowNewsViewSet(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
     queryset = News.objects.all().order_by('-published_at')
     permission_classes = [Read_only_permission]
-    authentication_classes = [CsrfExemptSessionAuthentication]  
     
     def get_queryset(self):
         return News.objects.all().order_by('-published_at')
@@ -208,8 +206,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     api_view(['POST'])
     permission_classes([AllowAny])
-    authentication_classes = [CsrfExemptSessionAuthentication]
-
+    
 @api_view(['POST'])
 @csrf_exempt  
 def login_view(request):
@@ -253,7 +250,6 @@ def login_view(request):
 def register_view(request):
     serializer = RegisterSerializer(data=request.data)
     permission_classes = [AllowAny]
-    authentication_classes = [CsrfExemptSessionAuthentication]  
     if serializer.is_valid():
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
@@ -311,4 +307,3 @@ class ActorViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
     permission_classes = [Read_only_permission]
-    authentication_classes = [CsrfExemptSessionAuthentication]  
