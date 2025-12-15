@@ -24,7 +24,6 @@
 </template>
 
 <script setup>
-    const user=ref({})
 
 
 </script>

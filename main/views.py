@@ -65,16 +65,17 @@ class TicketViewSet(viewsets.ModelViewSet):
     
     def create(self, request):
         """Покупка билета - POST /api/tickets/"""
+        print(f"DEBUG: Получены данные: {request.data}") 
         try:
-            show_id = request.data.get('show')
+            session_id = request.data.get('session')
             row = request.data.get('row')
             seat = request.data.get('seat')
             price = request.data.get('price')
             user_id = request.data.get('user')
 
             try:
-                show = Show.objects.get(id=show_id, available=True)
-            except Show.DoesNotExist:
+               session = Session.objects.get(id=session_id)
+            except Session.DoesNotExist:
                 return Response(
                     {'error': 'Спектакль не найден или недоступен'},
                     status=status.HTTP_400_BAD_REQUEST
@@ -89,7 +90,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 )
             
             existing_ticket = Ticket.objects.filter(
-                show=show,
+                session=session,
                 row=row,
                 seat=seat,
                 status=True
@@ -102,7 +103,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 }, status=status.HTTP_400_BAD_REQUEST)
             
             ticket_data = {
-                'show': show_id,
+                'session': session_id,
                 'row': row,
                 'seat': seat,
                 'price': price,
@@ -129,7 +130,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def available(self, request):
         """Проверить доступность места: /api/tickets/available/?show=1&row=5&seat=10"""
-        session_id = request.query_params.get('show')
+        session_id = request.query_params.get('session')
         row = request.query_params.get('row')
         seat = request.query_params.get('seat')
         

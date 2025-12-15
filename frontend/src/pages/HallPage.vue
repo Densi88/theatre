@@ -334,7 +334,6 @@ const buyTickets = async () => {
     // Создаем билеты для каждого выбранного места
     const promises = selectedSeats.value.map(seat => {
       const ticketData = {
-        show: sessionData.value.show_id || route.params.showId,
         session: route.params.id,
         row: seat.row,
         seat: seat.seat,
