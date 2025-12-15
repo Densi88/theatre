@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
-from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, RegisterSerializer
+from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, RegisterSerializer, LoginSerializer
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
 from django.contrib.auth.models import User
 from .permissions import Read_only_permission
@@ -212,6 +212,47 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             'is_authenticated':request.user.is_authenticated,
             'is_staff':request.user.is_staff
         })
+    @action(url_path="login", methods=["POST"], detail=False)
+    def login(self, request, *args, **kwargs):  # ← ДОБАВЬТЕ request параметр
+        serializer = LoginSerializer(data=request.data)  # ← используйте request.data
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+
+    # ФИКС: authenticate требует request и именованные аргументы
+        user = authenticate(request, username=username, password=password)
+    
+        if user:
+            login(request, user)
+        
+        # Получаем профиль пользователя если есть
+            try:
+                profile = UserProfile.objects.get(user=user)
+                profile_id = profile.id
+                role = profile.role
+            except UserProfile.DoesNotExist:
+                profile_id = None
+                role = 'user'
+        
+            return Response({
+                'success': True,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'profile_id': profile_id,
+                    'role': role
+                }
+            })
+        else:
+            return Response({
+            "success": False,
+            "message": "Неверные учетные данные"
+        }, status=status.HTTP_401_UNAUTHORIZED)  # ← используйте status из rest_framework
+    
+
+
     
 
 @api_view(['POST'])

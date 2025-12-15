@@ -19,8 +19,8 @@ router.register(r'users', views.UserProfileViewSet, basename='userprofile')
 
 urlpatterns=[
      path('', include(router.urls)),
-     # path('api/auth/login/', views.login_view, name='login'),
-     path('api/auth/register/', views.register_view, name='login'),
+     # path('api/users/login/', views.login, name='login'),
+     path('api/auth/register/', views.register_view, name='register'),
 ]
 
 if settings.DEBUG:

@@ -1,4 +1,5 @@
 <template>
+    
     <q-page class="flex flex-center">
         <q-card style="width: 350px">
             <q-card-section>
@@ -7,12 +8,28 @@
 
             <q-card-section>
                 <q-form class="q-gutter-md">
-                    <q-input v-model="form.username" label="Логин" outlined :rules="[val => !!val || 'Обязательно']" />
+                    <q-input 
+                        v-model="formData.username" 
+                        label="Логин" 
+                        outlined 
+                        :rules="[val => !!val || 'Обязательно']" 
+                    />
 
-                    <q-input v-model="form.password" label="Пароль" type="password" outlined
-                        :rules="[val => !!val || 'Обязательно']" />
+                    <q-input 
+                        v-model="formData.password" 
+                        label="Пароль" 
+                        type="password" 
+                        outlined
+                        :rules="[val => !!val || 'Обязательно']" 
+                    />
 
-                    <q-btn type="submit" label="Войти" color="primary" class="full-width" />
+                    <q-btn
+                        @click="submitLogin()" 
+                        type="submit" 
+                        label="Войти" 
+                        color="primary" 
+                        class="full-width" 
+                    />
 
                     <div class="text-center">
                         <q-btn flat label="Регистрация" @click="$router.push('/register')" />
@@ -24,6 +41,30 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import axios from 'axios';
 
+// Используйте ref с объектом
+const formData = ref({
+    username: '',
+    password: ''
+});
 
+const submitLogin = async () => {
+    try {
+        console.log('Пытаюсь войти с:', formData.value.username);
+        
+        // Проверьте правильный endpoint!
+        const r = await axios.post("/api/users/login/", {
+            username: formData.value.username,
+            password: formData.value.password
+        });
+        
+        console.log(r.data);
+        
+    } catch (error) {
+        console.error('Ошибка входа:', error);
+        console.error('Ответ сервера:', error.response?.data);
+    }
+};
 </script>

@@ -119,6 +119,10 @@ class TicketSerializer(serializers.ModelSerializer):
         model=Ticket
         fields=['id', 'row', 'seat', 'status', 'price', 'session', 'user']
 
+class LoginSerializer(serializers.ModelSerializer):
+    username=serializers.CharField()
+    password=serializers.CharField()
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
