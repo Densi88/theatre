@@ -207,44 +207,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     api_view(['POST'])
     permission_classes([AllowAny])
     
-@api_view(['POST'])
-@csrf_exempt  
-def login_view(request):
-    serializer = LoginSerializer(data=request.data)
     
-    if serializer.is_valid():
-        username = serializer.validated_data['username']
-        password = serializer.validated_data['password']
-        
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            login(request, user)
-            
-            try:
-                profile = UserProfile.objects.get(user=user)
-                role = profile.role
-            except UserProfile.DoesNotExist:
-                role = 'user'
-            
-            return Response({
-                'success': True,
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                    'role': role
-                },
-                'message': 'Вход выполнен'
-            })
-        else:
-            return Response({
-                'success': False,
-                'message': 'Неверные учетные данные'
-            }, status=status.HTTP_400_BAD_REQUEST)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
