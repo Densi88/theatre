@@ -6,11 +6,15 @@
 import { onBeforeMount, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router'
+import { UseAuthStore } from 'src/stores/auth';
+const authStore = UseAuthStore()
 const router = useRouter()
 const userInfo=ref({})
 
 router.afterEach(() => {
   getUserInfo()
+  authStore.updateCsrfToken()
+
 })
 
 const getUserInfo=async()=>{
@@ -24,7 +28,6 @@ const getUserInfo=async()=>{
 
 onBeforeMount(() => {
   getUserInfo()
-  updateCsrfToken()
 
   // axios.defaults.headers.common['X-CSRFToken'] = Cookies.get("csrftoken");
 })
