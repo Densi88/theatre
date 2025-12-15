@@ -9,10 +9,10 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
-from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, LoginSerializer, RegisterSerializer
+from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, UserProfileSerializer, GenreSerializer, ActorSerializer, SessionSerializer, RegisterSerializer
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
 from django.contrib.auth.models import User
-from .permissions import Read_only_permission, Auth_permission
+from .permissions import Read_only_permission
 
 from rest_framework.authentication import SessionAuthentication
 
@@ -25,7 +25,7 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
     serializer_class = ShowsSerializer
     queryset = Show.objects.filter(available=True)
     #parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [Read_only_permission]
+    permission_classes = [AllowAny]
     
     def get_queryset(self):
         queryset = Show.objects.filter(available=True)
@@ -204,10 +204,15 @@ class ShowSessionsViewSet(viewsets.ModelViewSet):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    api_view(['POST'])
-    permission_classes([AllowAny])
+    @action(url_path="my", methods=["GET"], detail=False )
+    def get_my(self, request, *args, **kwargs):
+        return Response({
+            'username':request.user.username,
+            'is_authenticated':request.user.is_authenticated,
+            'is_staff':request.user.is_staff
+        })
     
-    
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
