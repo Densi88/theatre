@@ -43,24 +43,28 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { UseAuthStore } from 'src/stores/auth';
+
 
 // Используйте ref с объектом
 const formData = ref({
     username: '',
     password: ''
 });
+const authStore = UseAuthStore()
 
 const submitLogin = async () => {
     try {
         console.log('Пытаюсь войти с:', formData.value.username);
         
-        // Проверьте правильный endpoint!
         const r = await axios.post("/api/users/login/", {
             username: formData.value.username,
             password: formData.value.password
         });
         
         console.log(r.data);
+        authStore.updateCsrfToken()
+        
         
     } catch (error) {
         console.error('Ошибка входа:', error);

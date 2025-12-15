@@ -5,8 +5,13 @@
 <script setup>
 import { onBeforeMount, ref } from 'vue';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const userInfo=ref({})
+
+router.afterEach(() => {
+  getUserInfo()
+})
 
 const getUserInfo=async()=>{
   const data=await axios.get("/api/users/my/")
@@ -19,8 +24,9 @@ const getUserInfo=async()=>{
 
 onBeforeMount(() => {
   getUserInfo()
+  updateCsrfToken()
 
-  axios.defaults.headers.common['X-CSRFToken'] = Cookies.get("csrftoken");
+  // axios.defaults.headers.common['X-CSRFToken'] = Cookies.get("csrftoken");
 })
 
 </script>

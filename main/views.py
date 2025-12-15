@@ -13,6 +13,7 @@ from .serializers import TicketSerializer, ShowsSerializer, NewsSerializer, User
 from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
 from django.contrib.auth.models import User
 from .permissions import Read_only_permission
+from django.middleware.csrf import get_token
 
 from rest_framework.authentication import SessionAuthentication
 
@@ -216,17 +217,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     def login(self, request, *args, **kwargs):  # ← ДОБАВЬТЕ request параметр
         serializer = LoginSerializer(data=request.data)  # ← используйте request.data
         serializer.is_valid(raise_exception=True)
-
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
 
-    # ФИКС: authenticate требует request и именованные аргументы
         user = authenticate(request, username=username, password=password)
     
         if user:
             login(request, user)
-        
-        # Получаем профиль пользователя если есть
+            get_token(request)
+            print(user)
             try:
                 profile = UserProfile.objects.get(user=user)
                 profile_id = profile.id
@@ -249,8 +248,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return Response({
             "success": False,
             "message": "Неверные учетные данные"
-        }, status=status.HTTP_401_UNAUTHORIZED)  # ← используйте status из rest_framework
-    
+        }, status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(url_path="logout", methods=['POST'], detail=False)
+    def logout(self, *args, **kwargs):
+        logout(self.request)
+        return Response()
+
+
 
 
     
