@@ -12,6 +12,7 @@
         <q-btn flat label="Мои билеты" to="/my-tickets" />
         <q-btn flat label="Регистрация" to="/registration" />
         <q-btn flat label="Войти" to="/login" />
+        <q-btn flat label="Профиль" to="/profile" />
         <q-btn flat label="Выход" @click="onLogout()"/>
         <q-btn flat label="Админка" href="http://localhost:8000/admin/" target="_blank" />
 

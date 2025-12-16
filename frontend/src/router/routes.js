@@ -64,6 +64,11 @@ const routes = [
         name: 'registration',
         component: () => import('pages/RegistrationPage.vue')
       },
+       {
+        path: 'profile',
+        component: () => import('src/pages/ProfilePage.vue'),
+        name: 'profile'
+      },
     ]
   },
 

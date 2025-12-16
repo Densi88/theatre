@@ -13,6 +13,8 @@ export const UseAuthStore = defineStore("auth", () => {
     const user_id=ref()
     const profile_id=ref()
     const isLoading = ref(false)
+    const full_name=ref()
+    const email=ref()
 
    const init = async () => {
         updateCsrfToken()
@@ -31,7 +33,9 @@ export const UseAuthStore = defineStore("auth", () => {
             is_authenticated.value = r.data.is_authenticated;
             permissions.value = r.data.permissions || [];
             is_staff.value = r.data.is_staff;
-            profile_id.value = r.data.profile_id
+            profile_id.value = r.data.profile_id;
+            full_name.value=r.data.full_name;
+            email.value=r.data.email;
             
             console.log('[AuthStore] После установки:', {
                 is_authenticated: is_authenticated.value,
@@ -76,6 +80,8 @@ export const UseAuthStore = defineStore("auth", () => {
         user_id,
         profile_id,
         isLoading,
+        email,
+        full_name,
 
         init,
         fetchUserInfo,

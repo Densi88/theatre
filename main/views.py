@@ -217,12 +217,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     def get_my(self, request, *args, **kwargs):
         user_profile = request.user.userprofile 
         profile_id = user_profile.id
+        full_name=user_profile.full_name
         return Response({
             'profile_id': profile_id,
             'id': request.user.id,
             'username':request.user.username,
             'is_authenticated':request.user.is_authenticated,
             'is_staff':request.user.is_staff,
+            'email': request.user.email,
+            'full_name': full_name,
         })
     @action(url_path="login", methods=["POST"], detail=False)
     def login(self, request, *args, **kwargs):  # ← ДОБАВЬТЕ request параметр
