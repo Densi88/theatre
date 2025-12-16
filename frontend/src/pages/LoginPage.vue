@@ -44,6 +44,8 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { UseAuthStore } from 'src/stores/auth';
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 
 const formData = ref({
@@ -63,6 +65,7 @@ const submitLogin = async () => {
         
         console.log(r.data);
         authStore.updateCsrfToken()
+         router.push('/')
         
         
     } catch (error) {

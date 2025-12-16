@@ -3,7 +3,7 @@
     Новости нашего театра
   </div>
   <div class="q-ma-xs">
-        <q-btn color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
+        <q-btn v-if="authStore.is_staff" color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
 
 
@@ -69,10 +69,10 @@
           </q-card-actions>
           <q-card-actions align="left">
                     <div class="q-ma-xs">
-                        <q-btn  color="grey-9" icon="delete" label="Удалить" @click.stop="deleteNew(newsItem)" />
+                        <q-btn v-if="authStore.is_staff"  color="grey-9" icon="delete" label="Удалить" @click.stop="deleteNew(newsItem)" />
                     </div>
                     <div class="q-ma-xs">
-                        <q-btn  color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(newsItem)" />
+                        <q-btn v-if="authStore.is_staff"  color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(newsItem)" />
                     </div>
                 </q-card-actions>
         </q-card>
@@ -126,8 +126,8 @@ import { useQuasar } from 'quasar'
 import axios from "axios"
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
-// import { UseAuthStore } from 'stores/auth'
-// const authStore=UseAuthStore()
+import { UseAuthStore } from 'stores/auth'
+const authStore=UseAuthStore()
 
 
 const $q = useQuasar()

@@ -9,6 +9,7 @@ export const UseAuthStore = defineStore("auth", () => {
     const username = ref();
     const is_authenticated = ref(null);
     const permissions = ref([])
+    const is_staff=ref(null)
 
     async function fetchUserInfo() {
         const r = await axios.get("/api/users/my/");
@@ -16,6 +17,8 @@ export const UseAuthStore = defineStore("auth", () => {
         username.value = r.data.username;
         is_authenticated.value = r.data.is_authenticated;
         permissions.value = r.data.permissions;
+        is_staff.value=r.data.is_staff;
+
     }
     const updateCsrfToken = () => {
         const csrfToken = Cookies.get('csrftoken')
@@ -39,6 +42,7 @@ export const UseAuthStore = defineStore("auth", () => {
     return {
         username,
         is_authenticated,
+        is_staff,
 
         fetchUserInfo,
         hasPermission,

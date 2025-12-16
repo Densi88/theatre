@@ -26,7 +26,7 @@ class ShowShowsViewSet(viewsets.ModelViewSet):
     serializer_class = ShowsSerializer
     queryset = Show.objects.filter(available=True)
     #parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [AllowAny]
+    permission_classes = [Read_only_permission]
     
     def get_queryset(self):
         queryset = Show.objects.filter(available=True)
@@ -164,7 +164,7 @@ class ShowSessionsViewSet(viewsets.ModelViewSet):
         """Фильтрация сеансов"""
         queryset = Session.objects.all()
         
-        date = self.request.query_params.get('date')  # ← Исправлено!
+        date = self.request.query_params.get('date')  
         if date:
             queryset = queryset.filter(date=date)
         
@@ -211,7 +211,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return Response({
             'username':request.user.username,
             'is_authenticated':request.user.is_authenticated,
-            'is_staff':request.user.is_staff
+            'is_staff':request.user.is_staff,
         })
     @action(url_path="login", methods=["POST"], detail=False)
     def login(self, request, *args, **kwargs):  # ← ДОБАВЬТЕ request параметр

@@ -16,7 +16,7 @@
     </div>
 
     <div class="q-ma-xs">
-        <q-btn color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
+        <q-btn v-if="authStore.is_staff" color="grey-9" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
 
 
@@ -148,6 +148,8 @@ const actors = ref([])
 const genres = ref([])
 const searchQuery = ref('')
 const selectedGenre = ref(null)
+import { UseAuthStore } from 'stores/auth'
+const authStore=UseAuthStore()
 
 const addDialog = ref(false)
 const updateDialog = ref(false)
