@@ -205,6 +205,9 @@ const formattedDate = computed(() => {
 })
 
 const getImageUrl = (imagePath) => {
+  if(!imagePath){
+    return 
+  }
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     console.log('URL уже полный:', imagePath)
     return imagePath

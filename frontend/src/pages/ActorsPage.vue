@@ -1,18 +1,18 @@
 <template>
     <div class="q-mb-md">
-        <q-btn v-if="authStore.isAdmin" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
+        <q-btn v-if="authStore.is_staff" color="primary" icon="add" label="Добавить" @click="openAddDialog()" />
     </div>
     <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="actorItem in actors" :key="actorItem.id">
             <div class="q-card q-ma-sm" @click="viewActorDetail(newsItem)">
                 <q-img :src="getImage(actorItem.photo)" :ratio="16 / 9" />
 
-                <div class="text-body1 text-weight-bold q-mt-sm">
+                <div class="text-body1 text-weight-bold q-ma-sm">
                     {{ actorItem.name }}
                 </div>
 
-                <div class="text-body1 text-weight-medium q-mb-sm">
-                    {{ actorItem.bio }}
+                <div class="text-body1 text-weight-medium q-ma-sm">
+                    {{ truncateText(actorItem.bio, 150) }}
                 </div>
                 <q-card-actions align="right">
                     <q-btn flat color="primary" icon="arrow_forward" label="Читать далее"
@@ -77,8 +77,8 @@ import axios from "axios"
 const actors = ref([])
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from 'stores/auth'
-const authStore=useAuthStore()
+import { UseAuthStore } from 'stores/auth'
+const authStore=UseAuthStore()
 
 const newActor=ref({
     name:'',
@@ -101,6 +101,9 @@ const download = async () => {
 }
 
 const getImage = (imagePath) => {
+    if(!imagePath){
+    return 
+  }
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     console.log('URL уже полный:', imagePath)
     return imagePath
@@ -189,6 +192,21 @@ const submitUpdate=async()=>{
             caption: error.response?.data ? JSON.stringify(error.response.data) : error.message
         })
     }
+}
+const truncateText = (text, maxLength = 150) => {
+  
+  if (!text || typeof text !== 'string') {
+    return 'Описание отсутствует'
+  }
+  
+  const trimmed = text.trim()
+  
+  if (trimmed.length <= maxLength) {
+    return trimmed
+  }
+  
+  const result = trimmed.substring(0, maxLength) + '...'
+  return result
 }
 onMounted(() => {
   download()

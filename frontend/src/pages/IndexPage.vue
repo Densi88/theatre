@@ -16,7 +16,7 @@
         </div>
 
         <div class="text-body1 text-weight-medium q-mb-sm">
-          {{ showItem.description }}
+          {{truncateText(showItem.description, 150) }}
         </div>
         <q-card-actions align="right">
           <q-btn flat color="primary" icon="arrow_forward" label="Читать далее"
@@ -41,7 +41,7 @@
         <q-img :src="getImage(newsItem.news_image)" :ratio="16 / 9" />
 
         <div class="text-body1 text-weight-medium q-mt-sm q-mb-sm">
-          {{ newsItem.description }}
+          {{truncateText(newsItem.description, 150) }}
         </div>
         <q-card-actions align="right">
           <q-btn flat color="primary" icon="arrow_forward" label="Читать далее" @click.stop="viewNewsDetail(newsItem)" />
@@ -70,6 +70,9 @@ const downloadFiveNews = async () => {
 }
 
 const getImage = (imagePath) => {
+  if(!imagePath){
+    return 
+  }
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     console.log('URL уже полный:', imagePath)
     return imagePath
@@ -85,6 +88,21 @@ const viewNewsDetail=(newsItem)=>{
 
 const viewShowDetail=(showItem)=>{
   router.push(`/shows/${showItem.id}`)
+}
+const truncateText = (text, maxLength = 150) => {
+  
+  if (!text || typeof text !== 'string') {
+    return 'Описание отсутствует'
+  }
+  
+  const trimmed = text.trim()
+  
+  if (trimmed.length <= maxLength) {
+    return trimmed
+  }
+  
+  const result = trimmed.substring(0, maxLength) + '...'
+  return result
 }
 
 onMounted(() => {

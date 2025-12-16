@@ -67,10 +67,10 @@
                 </q-card-actions>
                 <q-card-actions align="left">
                     <div class="q-ma-xs">
-                        <q-btn color="grey-9" icon="delete" label="Удалить" @click.stop="deleteShow(showItem)" />
+                        <q-btn v-if="authStore.is_staff" color="grey-9" icon="delete" label="Удалить" @click.stop="deleteShow(showItem)" />
                     </div>
                     <div class="q-ma-xs">
-                        <q-btn color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
+                        <q-btn v-if="authStore.is_staff" color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
                     </div>
                 </q-card-actions>
             </q-card>
@@ -200,6 +200,9 @@ const loadShows = async () => {
 }
 
 const getImageUrl = (imagePath) => {
+    if(!imagePath){
+    return 
+  }
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
         console.log('URL уже полный:', imagePath)
         return imagePath
