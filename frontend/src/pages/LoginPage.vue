@@ -46,7 +46,6 @@ import axios from 'axios';
 import { UseAuthStore } from 'src/stores/auth';
 
 
-// Используйте ref с объектом
 const formData = ref({
     username: '',
     password: ''

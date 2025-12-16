@@ -25,11 +25,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from 'stores/auth'
+import axios from "axios"
+import { useQuasar } from 'quasar'
+const $q = useQuasar()
 
 const router = useRouter()
-const authStore = useAuthStore()
-
 const form = ref({
   username: '',
   password: '',
@@ -39,9 +39,41 @@ const form = ref({
   passport_series: '',
   passport_number: ''
 })
-
+const register = async () => {
+   const response = await axios.post('/api/auth/register/', {
+      username: form.value.username,
+      password: form.value.password,
+      email: form.value.email || '',
+      full_name: form.value.full_name,
+      birth_date: form.value.birth_date,
+      passport_series: form.value.passport_series.toString(),
+      passport_number: form.value.passport_number.toString()
+    })
+    
+    console.log('Ответ сервера:', response.data)
+    
+    if (response.data.success) {
+      console.log("Регистрация успешна")
+      
+      // Сохраняем данные пользователя
+      if (response.data.user) {
+        localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('userId', response.data.user.id)
+        localStorage.setItem('username', response.data.user.username)
+      }
+      
+      // Показываем уведомление
+      $q.notify({
+        type: 'positive',
+        message: 'Регистрация успешна!',
+        timeout: 2000
+      })
+      } else {
+      console.log("Ошибка регистрации")
+    }
+}
 const handleRegister = async () => {
-  const result = await authStore.register(form.value)
+  const result = await register()
   
   if (result.success) {
     router.push('/')

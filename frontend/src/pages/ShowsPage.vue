@@ -8,7 +8,7 @@
             </template>
         </q-input>
          <q-select v-model="selectedGenre" :options="genres" label="Жанр" outlined clearable
-            @update:model-value="loadShows" class="col-12 col-md-3" option-label="name" option-value="id" />
+            @update:model-value="loadShows" class="col-12 col-md-3" option-label="genre_name" option-value="id"/>
     </div>
        
     <div class="text-h4 text-weight-bold q-ma-xs">
