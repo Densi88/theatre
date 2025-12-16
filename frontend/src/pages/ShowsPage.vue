@@ -1,4 +1,16 @@
 <template>
+    <!-- Поиск -->
+    <div class="row q-mb-md">
+        <q-input v-model="searchQuery" placeholder="Поиск спектаклей..." outlined clearable
+            @update:model-value="loadShows" class="col-12 col-md-6">
+            <template v-slot:append>
+                <q-icon name="search" />
+            </template>
+        </q-input>
+         <q-select v-model="selectedGenre" :options="genres" label="Жанр" outlined clearable
+            @update:model-value="loadShows" class="col-12 col-md-3" option-label="name" option-value="id" />
+    </div>
+       
     <div class="text-h4 text-weight-bold q-ma-xs">
         Спектакли
     </div>
@@ -58,7 +70,7 @@
                         <q-btn color="grey-9" icon="delete" label="Удалить" @click.stop="deleteShow(showItem)" />
                     </div>
                     <div class="q-ma-xs">
-                        <q-btn  color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
+                        <q-btn color="grey-9" icon="update" label="Изменить" @click.stop="openUpdateDialog(showItem)" />
                     </div>
                 </q-card-actions>
             </q-card>
@@ -134,6 +146,8 @@ const totalCount = ref(0)
 const router = useRouter()
 const actors = ref([])
 const genres = ref([])
+const searchQuery = ref('')
+const selectedGenre = ref(null)
 
 const addDialog = ref(false)
 const updateDialog = ref(false)
@@ -157,11 +171,19 @@ const updatedShow = ref({
 
 const loadShows = async () => {
     loading.value = true
+    const params={}
+    if (searchQuery.value) {
+      params.search = searchQuery.value
+    }
+    
+    if (selectedGenre.value) {
+      params.genre = selectedGenre.value.id
+    }
 
     try {
-        const response = await axios.get('/api/shows')
-        console.log('Полный ответ API:', response) // Для отладки
-        console.log('Данные:', response.data) // Посмотрите структуру
+        const response = await axios.get('/api/shows/', {params})
+        console.log('Полный ответ API:', response) 
+        console.log('Данные:', response.data) 
         shows.value = response.data
         totalCount.value = response.data.count || response.data.length
     } catch (error) {
@@ -260,14 +282,14 @@ const loadActorsAndGenres = async () => {
         const actorsResp = await axios.get('/api/actors')
         actors.value = actorsResp.data.map(a => ({
             label: a.name,
-            value: String(a.id)  
+            value: String(a.id)
         }))
         console.log('Actors loaded:', actors.value)
 
         const genresResp = await axios.get('/api/genres')
         genres.value = genresResp.data.map(g => ({
             label: g.genre_name,
-            value: String(g.id) 
+            value: String(g.id)
         }))
         console.log('Genres loaded:', genres.value)
 
@@ -302,14 +324,14 @@ const openUpdateDialog = (showItem) => {
         const id = typeof a === 'object' ? a.id : a
         return String(id)  // ← В строку!
     })
-    
+
     const genreIds = showItem.genre.map(g => {
         const id = typeof g === 'object' ? g.id : g
         return String(id)  // ← В строку!
     })
-    
+
     updatedShow.value = {
-        id: showItem.id, title: showItem.title, description: showItem.description, poster: showItem.poster, actor:actorIds,
+        id: showItem.id, title: showItem.title, description: showItem.description, poster: showItem.poster, actor: actorIds,
         genre: genreIds, duration: showItem.duration
     }
     updateDialog.value = true
@@ -325,12 +347,12 @@ const updateShow = async () => {
             const cleanId = String(id).replace(/^,/, '').trim()
             if (cleanId) formData.append('actor', cleanId)
         })
-        
+
         updatedShow.value.genre.forEach(id => {
             const cleanId = String(id).replace(/^,/, '').trim()
             if (cleanId) formData.append('genre', cleanId)
         })
-        
+
         // КЛЮЧЕВОЕ: проверяем, это файл или URL
         if (updatedShow.value.poster instanceof File) {
             formData.append('poster', updatedShow.value.poster)
@@ -338,22 +360,22 @@ const updateShow = async () => {
         } else if (updatedShow.value.poster) {
             console.log('Keeping old poster:', updatedShow.value.poster)
         }
-        
+
         console.log('FormData contents:')
         for (let [key, value] of formData.entries()) {
             console.log(key, ':', value, 'type:', typeof value)
         }
-        
+
         const response = await axios.patch(
             `/api/shows/${updatedShow.value.id}/`,
-            formData  
+            formData
         )
-        
+
         console.log('Success!', response.data)
         $q.notify({ type: 'positive', message: 'Спектакль обновлён!' })
         await loadShows()
         updateDialog.value = false
-        
+
     } catch (error) {
         console.error('Full error:', error)
         console.error('Response data:', error.response?.data)
