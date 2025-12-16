@@ -115,6 +115,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    session = SessionSerializer()
     class Meta:
         model=Ticket
         fields=['id', 'row', 'seat', 'status', 'price', 'session', 'user']

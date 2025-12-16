@@ -200,6 +200,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
+import { UseAuthStore } from 'stores/auth'
+const authStore=UseAuthStore()
 
 const $q = useQuasar()
 const route = useRoute()
@@ -329,7 +331,7 @@ const buyTickets = async () => {
   
   try {
     // Получаем ID текущего пользователя (обычно из store/auth)
-    const userId = localStorage.getItem('userId') || 1 // Замените на реальный ID
+    const userId = authStore.profile_id  // Замените на реальный ID
     
     // Создаем билеты для каждого выбранного места
     const promises = selectedSeats.value.map(seat => {
@@ -382,6 +384,7 @@ const buyTickets = async () => {
 // Инициализация
 onMounted(() => {
   loadHallLayout()
+  authStore.fetchUserInfo()
 })
 </script>
 

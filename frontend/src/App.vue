@@ -28,6 +28,7 @@ const getUserInfo=async()=>{
 
 onBeforeMount(() => {
   getUserInfo()
+  authStore.fetchUserInfo()
 
   // axios.defaults.headers.common['X-CSRFToken'] = Cookies.get("csrftoken");
 })

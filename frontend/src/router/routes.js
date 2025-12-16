@@ -18,6 +18,11 @@ const routes = [
         component: () => import('pages/ShowPage.vue'),
         name: 'show'
       },
+      {
+        path: 'shows/:id/sessions',
+        component: () => import('pages/SessionsPage.vue'),
+        name: 'sessions'
+      },
 
       {
         path: 'news',
@@ -48,16 +53,6 @@ const routes = [
         path: 'news/:id',
         name: 'news-detail',
         component: () => import('pages/NewsDetail.vue')
-      },
-        {
-        path: 'tickets',
-        component: () => import('pages/BuyTicketPage.vue'),
-        name: 'show'
-      },
-       {
-        path: 'shows/:id/sessions',
-        component: () => import('pages/SessionsPage.vue'),
-        name: 'sessions'
       },
        {
         path: 'sessions/:id/seats',

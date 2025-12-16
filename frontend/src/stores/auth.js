@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { onBeforeMount, ref } from 'vue';
+import {ref } from 'vue';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -10,23 +10,58 @@ export const UseAuthStore = defineStore("auth", () => {
     const is_authenticated = ref(null);
     const permissions = ref([])
     const is_staff=ref(null)
+    const user_id=ref()
+    const profile_id=ref()
+    const isLoading = ref(false)
+
+   const init = async () => {
+        updateCsrfToken()
+        await fetchUserInfo()
+    }
 
     async function fetchUserInfo() {
-        const r = await axios.get("/api/users/my/");
-
-        username.value = r.data.username;
-        is_authenticated.value = r.data.is_authenticated;
-        permissions.value = r.data.permissions;
-        is_staff.value=r.data.is_staff;
-
+        console.log('[AuthStore] Загрузка данных пользователя...')
+        isLoading.value = true
+        try {
+            const r = await axios.get("/api/users/my/");
+            console.log('[AuthStore] Ответ API:', r.data)
+            
+            user_id.value = r.data.id;
+            username.value = r.data.username;
+            is_authenticated.value = r.data.is_authenticated;
+            permissions.value = r.data.permissions || [];
+            is_staff.value = r.data.is_staff;
+            profile_id.value = r.data.profile_id
+            
+            console.log('[AuthStore] После установки:', {
+                is_authenticated: is_authenticated.value,
+                profile_id: profile_id.value,
+                username: username.value
+            })
+            
+        } catch (error) {
+            console.error('[AuthStore] Ошибка загрузки:', error)
+            console.error('[AuthStore] Статус:', error.response?.status)
+            console.error('[AuthStore] Данные ошибки:', error.response?.data)
+            
+            // Если 401 - не авторизован
+            if (error.response?.status === 401) {
+                is_authenticated.value = false
+                username.value = ''
+                profile_id.value = null
+            }
+        } finally {
+            isLoading.value = false
+        }
     }
+    
     const updateCsrfToken = () => {
         const csrfToken = Cookies.get('csrftoken')
         if (csrfToken) {
             axios.defaults.headers.common['X-CSRFToken'] = csrfToken
-            console.log('CSRF token updated:', csrfToken)
+            console.log('[AuthStore] CSRF token обновлен')
         } else {
-            console.warn('CSRF token not found in cookies')
+            console.warn('[AuthStore] CSRF token не найден')
         }
     }
 
@@ -34,16 +69,15 @@ export const UseAuthStore = defineStore("auth", () => {
         return permissions.value.includes(name);
     }
 
-    onBeforeMount(async () => {
-        fetchUserInfo();
-        updateCsrfToken()
-    })
-
     return {
         username,
         is_authenticated,
         is_staff,
+        user_id,
+        profile_id,
+        isLoading,
 
+        init,
         fetchUserInfo,
         hasPermission,
         updateCsrfToken,

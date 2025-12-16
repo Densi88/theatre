@@ -61,9 +61,16 @@ class ShowNewsViewSet(viewsets.ModelViewSet):
 
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
-    queryset = Ticket.objects.filter(status=True)
-    permission_classes=[AllowAny]
-    
+   
+    permission_classes=[Read_only_permission]
+
+    def get_queryset(self):
+        queryset = Ticket.objects.all()
+        user_id = self.request.query_params.get('user')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        return queryset
+
     def create(self, request):
         """Покупка билета - POST /api/tickets/"""
         print(f"DEBUG: Получены данные: {request.data}") 
@@ -208,7 +215,11 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     @action(url_path="my", methods=["GET"], detail=False )
     def get_my(self, request, *args, **kwargs):
+        user_profile = request.user.userprofile 
+        profile_id = user_profile.id
         return Response({
+            'profile_id': profile_id,
+            'id': request.user.id,
             'username':request.user.username,
             'is_authenticated':request.user.is_authenticated,
             'is_staff':request.user.is_staff,
