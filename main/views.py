@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views import View
 from django.db.models import Q
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
 from django.views.decorators.csrf import csrf_exempt
@@ -14,12 +12,9 @@ from .models import Show, News, Ticket, UserProfile, Session, Genre, Actor
 from django.contrib.auth.models import User
 from .permissions import Read_only_permission
 from django.middleware.csrf import get_token
-
-from rest_framework.authentication import SessionAuthentication
-
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-    def enforce_csrf(self, request):
-        return  # пропускаем проверк
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+import io
 
 
 class ShowShowsViewSet(viewsets.ModelViewSet):
@@ -70,6 +65,54 @@ class TicketViewSet(viewsets.ModelViewSet):
         if user_id:
             queryset = queryset.filter(user_id=user_id)
         return queryset
+    
+
+    @action(methods=["GET"], url_path="export", detail=False)
+    def excel_export(self, request, *args, **kwargs):
+        tickets=Ticket.objects.all()
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Билеты"
+
+        headers = ['Ряд', 'Место', 'Дата сеанса', 'Шоу', 'Цена']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col, value=header)
+            cell.font = Font(bold=True)
+            cell.alignment = Alignment(horizontal='center')
+        
+        for row, ticket in enumerate(tickets, 2):
+            ws.cell(row=row, column=1, value=ticket.row)
+            ws.cell(row=row, column=2, value=ticket.seat)
+            ws.cell(row=row, column=3,  value=ticket.session.date.strftime('%Y-%m-%d %H:%M:%S'))
+            ws.cell(row=row, column=4, value=ticket.session.show.title)
+            ws.cell(row=row, column=5, value=ticket.price)
+        
+        for column in ws.columns: 
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            adjusted_width = min(max_length + 2, 50)
+            ws.column_dimensions[column_letter].width = adjusted_width
+        
+        buffer = io.BytesIO()
+        wb.save(buffer)
+        buffer.seek(0)
+        
+        response = HttpResponse(
+            buffer.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="tickets.xlsx"'
+        
+        return response
+
+
 
     def create(self, request):
         """Покупка билета - POST /api/tickets/"""

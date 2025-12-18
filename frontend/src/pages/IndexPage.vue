@@ -6,6 +6,11 @@
     Наши представления
   </div>
 
+   <div class="q-ma-xs">
+        <q-btn v-if="authStore.is_staff" color="grey-9" icon="add" label="Экспорт билетов в excel" @click="exportBooksToExcel()" />
+    </div>
+
+
   <div class="row q-col-gutter-md">
     <div class="col-12 col-sm-6 col-md-4 col-lg-3" v-for="showItem in shows" :key="showItem.id">
       <div class="q-card q-ma-sm"  @click="viewNewDetail(newsItem)">
@@ -56,6 +61,8 @@
 <script setup>
 import axios from "axios"
 import { useRouter } from 'vue-router'
+import { UseAuthStore } from 'stores/auth'
+const authStore=UseAuthStore()
 const shows = ref([])
 const news = ref([])
 const router = useRouter()
@@ -68,7 +75,19 @@ const downloadFiveNews = async () => {
   const response = await axios.get('/api/news')
   news.value = response.data.slice(0, 5) // Берем первые 5 элементов
 }
-
+async function exportBooksToExcel() {
+        const response = await axios.get('/api/tickets/export/', {
+            responseType: 'blob' 
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'tickets.xlsx');
+        document.body.appendChild(link);
+        link.click();  
+        link.remove();
+        window.URL.revokeObjectURL(url);   
+}
 const getImage = (imagePath) => {
   if(!imagePath){
     return 
@@ -80,6 +99,7 @@ const getImage = (imagePath) => {
 
   return imagePath
 }
+
 
 const viewNewsDetail=(newsItem)=>{
   router.push(`/news/${newsItem.id}`)

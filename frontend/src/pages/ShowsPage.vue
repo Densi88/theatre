@@ -140,8 +140,6 @@ import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const shows = ref([])
 const loading = ref(false)
-// const currentPage = ref(1)
-// const itemsPerPage = ref(9)
 const totalCount = ref(0)
 const router = useRouter()
 const actors = ref([])
@@ -150,7 +148,6 @@ const searchQuery = ref('')
 const selectedGenre = ref(null)
 import { UseAuthStore } from 'stores/auth'
 const authStore=UseAuthStore()
-
 const addDialog = ref(false)
 const updateDialog = ref(false)
 const newShow = ref({
@@ -332,7 +329,7 @@ const openUpdateDialog = (showItem) => {
 
     const genreIds = showItem.genre.map(g => {
         const id = typeof g === 'object' ? g.id : g
-        return String(id)  // ← В строку!
+        return String(id)
     })
 
     updatedShow.value = {
