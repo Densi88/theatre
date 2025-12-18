@@ -14,7 +14,6 @@
           <q-input v-model="form.birth_date" label="Дата рождения" type="date" outlined required />
           <q-input v-model="form.passport_series" label="Серия паспорта" type="number" outlined required />
           <q-input v-model="form.passport_number" label="Номер паспорта" type="number" outlined required />
-          
           <q-btn type="submit" label="Зарегистрироваться" color="primary" class="full-width" />
         </q-form>
       </q-card-section>
@@ -49,20 +48,8 @@ const register = async () => {
       passport_series: form.value.passport_series.toString(),
       passport_number: form.value.passport_number.toString()
     })
-    
-    console.log('Ответ сервера:', response.data)
-    
     if (response.data.success) {
       console.log("Регистрация успешна")
-      
-      // Сохраняем данные пользователя
-      if (response.data.user) {
-        localStorage.setItem('isAuthenticated', 'true')
-        localStorage.setItem('userId', response.data.user.id)
-        localStorage.setItem('username', response.data.user.username)
-      }
-      
-      // Показываем уведомление
       $q.notify({
         type: 'positive',
         message: 'Регистрация успешна!',
