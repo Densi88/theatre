@@ -37,7 +37,7 @@
     <div v-else class="row q-col-gutter-lg">
         <div v-for="showItem in shows" :key="showItem.id" class="col-12 col-md-6 col-lg-4">
             <q-card class="news-card cursor-pointer hover-card" @click="viewShowDetail(showItem)">
-                <q-img :src="getImageUrl(showItem.poster)" :ratio="16 / 9" class="show-image">
+                <q-img :src="computed(() => showItem?.poster || '')" :ratio="16 / 9" class="show-image">
                 </q-img>
 
                 <q-card-section>
@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import axios from "axios"
 import { useRouter } from 'vue-router'
@@ -167,7 +167,6 @@ const updatedShow = ref({
     genre: [],
     duration: ''
 })
-
 const loadShows = async () => {
     loading.value = true
     const params={}
@@ -185,6 +184,7 @@ const loadShows = async () => {
         console.log('Данные:', response.data) 
         shows.value = response.data
         totalCount.value = response.data.count || response.data.length
+        console.log('Poster path:', shows.value[0]?.poster)
     } catch (error) {
         $q.notify({
             type: 'negative',
@@ -196,24 +196,19 @@ const loadShows = async () => {
     }
 }
 
-const getImageUrl = (imagePath) => {
-    if(!imagePath){
-    return 
-  }
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-        console.log('URL уже полный:', imagePath)
-        return imagePath
-    }
+// const getImageUrl = (imagePath) => {
+//     if(!imagePath){
+//     return 
+//   }
+//     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+//         console.log('URL уже полный:', imagePath)
+//         return imagePath
+//     }
 
-    return imagePath
-}
+//     return imagePath
+// }
 
 const truncateText = (text, maxLength = 150) => {
-
-    if (!text || typeof text !== 'string') {
-        return 'Описание отсутствует'
-    }
-
     const trimmed = text.trim()
 
     if (trimmed.length <= maxLength) {
@@ -252,12 +247,8 @@ const submitAddShow = async () => {
         formData.append('duration', newShow.value.duration)
         console.log('actor:', newShow.value.actor, newShow.value.actor.map(a => typeof a))
         console.log('genre:', newShow.value.genre, newShow.value.genre.map(g => typeof g))
-
-        // Жанры и актеры
         newShow.value.actor.forEach(id => formData.append('actor', id))
         newShow.value.genre.forEach(id => formData.append('genre', id))
-
-        console.log('poster объект:', newShow.value.poster)
 
         if (newShow.value.poster) {
             formData.append('poster', newShow.value.poster)
@@ -286,8 +277,6 @@ const loadActorsAndGenres = async () => {
             label: a.name,
             value: String(a.id)
         }))
-        console.log('Actors loaded:', actors.value)
-
         const genresResp = await axios.get('/api/genres')
         genres.value = genresResp.data.map(g => ({
             label: g.genre_name,
@@ -298,8 +287,6 @@ const loadActorsAndGenres = async () => {
     } catch (error) {
         console.error('Ошибка загрузки:', error)
     }
-    console.log('actors array:', actors.value)
-    console.log('first actor:', actors.value[0])
 }
 const deleteShow = async (showItem) => {
     try {
@@ -354,8 +341,6 @@ const updateShow = async () => {
             const cleanId = String(id).replace(/^,/, '').trim()
             if (cleanId) formData.append('genre', cleanId)
         })
-
-        // КЛЮЧЕВОЕ: проверяем, это файл или URL
         if (updatedShow.value.poster instanceof File) {
             formData.append('poster', updatedShow.value.poster)
             console.log('Adding new poster file:', updatedShow.value.poster.name)

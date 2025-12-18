@@ -24,7 +24,7 @@
     <div v-for="newsItem in news" :key="newsItem.id" class="col-12 col-md-6 col-lg-4">
       <q-card class="news-card cursor-pointer hover-card" @click="viewNewsDetail(newsItem)">
         <!-- Картинка новости -->
-        <q-img :src="getImageUrl(newsItem.news_image)" :ratio="16 / 9" class="news-image">
+        <q-img :src="computed(() => newsItem?.news_image || '')" :ratio="16 / 9" class="news-image">
           <!-- Дата публикации поверх картинки -->
           <div class="absolute-top-right bg-grey-9 text-white q-pa-xs q-ma-sm rounded-borders">
             <div class="text-caption text-weight-bold">
@@ -193,18 +193,6 @@ const formattedDate = computed(() => {
     })
   }
 })
-
-const getImageUrl = (imagePath) => {
-  if (!imagePath) {
-    return
-  }
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath
-  }
-
-  return imagePath
-}
-
 const truncateText = (text, maxLength = 150) => {
 
   if (!text || typeof text !== 'string') {

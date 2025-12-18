@@ -20,7 +20,7 @@
 
             <!-- Картинка новости -->
             <div class="col-12 col-md-6">
-                <q-img :src="getImageUrl(news.news_image)" :ratio="16 / 9" class="rounded-borders shadow-2"
+                <q-img :src="computed(() => news?.news_image || '')" :ratio="16 / 9" class="rounded-borders shadow-2"
                     spinner-color="primary" :fallback-src="'https://via.placeholder.com/800x450?text=No+Image'" />
             </div>
 
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from "axios"
 import { date } from 'quasar'
@@ -51,19 +51,6 @@ const loadNews = async () => {
         loading.value = false
     }
 }
-
-const getImageUrl = (imagePath) => {
-    if(!imagePath){
-    return 
-  }
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-        console.log('URL уже полный:', imagePath)
-        return imagePath
-    }
-
-    return imagePath
-}
-
 const formatDate = (isoString) => {
     if (!isoString) return ''
     return date.formatDate(isoString, 'DD MMMM YYYY, HH:mm')

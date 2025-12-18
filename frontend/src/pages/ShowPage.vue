@@ -27,7 +27,7 @@
 
             <!-- Картинка новости -->
             <div class="col-12 col-md-6">
-                <q-img :src="getImageUrl(show.poster)" :ratio="16 / 9" class="rounded-borders shadow-2"
+                <q-img :src="computed(() => show?.poster || '')" :ratio="16 / 9" class="rounded-borders shadow-2"
                     spinner-color="primary" :fallback-src="'https://via.placeholder.com/800x450?text=No+Image'" />
             </div>
 
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from "axios"
 const route = useRoute()
@@ -56,18 +56,6 @@ const load = async () => {
         loading.value = false
     }
 }
-
-const getImageUrl = (imagePath) => {
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-        console.log('URL уже полный:', imagePath)
-        return imagePath
-    }
-
-    return imagePath
-}
-
-
-
 onMounted(load)
 </script>
 
